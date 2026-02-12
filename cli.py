@@ -1,5 +1,7 @@
 #this cli file is used to run the application from the command line and define the whole contract of the application
 
+#this file will contain the logic to run the application from the command line and it will also contain the logic to parse the command line arguments and run the appropriate functions based on the command line arguments passed by the user.
+
 import typer #for command line interface
 from aws.adapter import run_aws_scan #for running the aws scan
 
