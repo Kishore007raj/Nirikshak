@@ -12,12 +12,12 @@ scan_app = typer.Typer(help="Scan cloud providers for misconfigurations")
 
 @scan_app.command() #this command will run the aws scan
 def aws(
-    region: str = typer.Option(..., help="AWS region"),
+    region: str = typer.Option("ap-south-1", help="AWS region"),
     profile: str = typer.Option(None, help="AWS profile"),
 ):
     #this function will run the aws scan based on the provider argument and in the future we will add for other cloud providers as well like azure and gcp
 
-        run_aws_scan(profile, region)
+        run_aws_scan(region, profile)
 
 
 # add the scan sub-app to the main app

@@ -1,0 +1,16 @@
+[
+  {
+    "name": "public-bucket",
+    "public_access_block": {
+      "BlockPublicAcls": false
+    },
+    "encryption_enabled": false
+  },
+  {
+    "name": "secure-bucket",
+    "public_access_block": {
+      "BlockPublicAcls": true
+    },
+    "encryption_enabled": true
+  }
+]

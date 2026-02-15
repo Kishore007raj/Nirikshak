@@ -3,6 +3,14 @@
 from dataclasses import dataclass
 from typing import List, Dict, Any
 
+#this code is written for defining the data model for a resource and it will be used to store the resource information in a structured format and it will be used by the collectors to return resources.
+@dataclass
+class Resource:
+    resource_type: str
+    resource_id: str
+    region: str
+    config: Dict[str, Any]
+
 #this code is written for defining the data model for the scan result and it will be used to store the scan results in a structured format and it will also be used to generate the report in the future.
 @dataclass
 class ScanResult:

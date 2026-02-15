@@ -1,0 +1,10 @@
+[
+  {
+    "user_name": "admin-user",
+    "mfa_enabled": false
+  },
+  {
+    "user_name": "secure-user",
+    "mfa_enabled": true
+  }
+]
