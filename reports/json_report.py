@@ -2,10 +2,12 @@ import json
 from datetime import datetime
 
 
-def generate_json_report(findings, severity_count):
+def generate_json_report(findings, severity_count, scan_id, scan_time, risk_score):
 
     report = {
-        "scan_timestamp": datetime.utcnow().isoformat(),
+        "scan_id": scan_id,
+        "scan_timestamp": scan_time,
+        "risk_score": risk_score,
         "summary": severity_count,
         "total_findings": len(findings),
         "findings": findings
