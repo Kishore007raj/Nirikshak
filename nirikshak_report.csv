@@ -1,0 +1,4 @@
+Rule ID,Title,Severity,CIS,Resource Type,Resource ID
+AWS-S3-001,S3 Bucket Public Access Disabled,HIGH,CIS AWS 2.1.1,s3_bucket,public-bucket
+AWS-S3-002,S3 Bucket Encryption Disabled,MEDIUM,CIS AWS 2.1.2,s3_bucket,public-bucket
+AWS-EC2-001,Security Group Allows SSH from Anywhere,CRITICAL,CIS AWS 4.1,security_group,sg-123

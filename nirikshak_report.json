@@ -1,0 +1,42 @@
+{
+    "scan_timestamp": "2026-02-15T19:11:23.446853",
+    "summary": {
+        "CRITICAL": 1,
+        "HIGH": 1,
+        "MEDIUM": 1,
+        "LOW": 0
+    },
+    "total_findings": 3,
+    "findings": [
+        {
+            "rule_id": "AWS-S3-001",
+            "title": "S3 Bucket Public Access Disabled",
+            "severity": "HIGH",
+            "cis": "CIS AWS 2.1.1",
+            "resource_id": "public-bucket",
+            "resource_type": "s3_bucket",
+            "region": "ap-south-1",
+            "details": "Matched condition: public_access_block.BlockPublicAcls == false"
+        },
+        {
+            "rule_id": "AWS-S3-002",
+            "title": "S3 Bucket Encryption Disabled",
+            "severity": "MEDIUM",
+            "cis": "CIS AWS 2.1.2",
+            "resource_id": "public-bucket",
+            "resource_type": "s3_bucket",
+            "region": "ap-south-1",
+            "details": "Matched condition: encryption_enabled == false"
+        },
+        {
+            "rule_id": "AWS-EC2-001",
+            "title": "Security Group Allows SSH from Anywhere",
+            "severity": "CRITICAL",
+            "cis": "CIS AWS 4.1",
+            "resource_id": "sg-123",
+            "resource_type": "security_group",
+            "region": "ap-south-1",
+            "details": "Matched condition: open_ssh == true"
+        }
+    ]
+}
