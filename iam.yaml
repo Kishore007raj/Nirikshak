@@ -1,0 +1,8 @@
+#iam rules should ensure that the iam users have mfa enabled to protect against unauthorized access to the aws account
+
+- id: AWS-IAM-001
+  title: IAM User Without MFA
+  severity: HIGH
+  cis: CIS AWS 1.2
+  resource: iam_user
+  condition: mfa_enabled == false

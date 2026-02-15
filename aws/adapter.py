@@ -4,6 +4,8 @@ from aws.collectors.s3 import collect_s3_buckets #for collecting s3 buckets
 from aws.collectors.ec2 import collect_ec2_instances #for collecting ec2 instances
 from aws.collectors.iam import collect_iam_users #for collecting iam users
 from aws.collectors.cloudtrail import collect_cloudtrail_trails #for collecting cloudtrail trails
+from core.loader import load_rules #for loading the rules from the rules directory and it will return the rules in a structured format to be used by the rule engine to run the scan and generate the report.
+from core.engine import run_engine #for running the rules on the collected resources and it will return the report in a structured format to be used for generating the final report.
 
 def run_aws_scan(region: str, profile: str):
     print("[NIRIKSHAK] Running AWS scan...")
@@ -20,4 +22,18 @@ def run_aws_scan(region: str, profile: str):
 
     print(f"[NIRIKSHAK] AWS scan completed. Found {len(resources)} resources.")
 
-    
+    rules = load_rules()
+    report = run_engine(resources, rules)
+
+    print("\n=== AWS Scan Report ===")
+
+    for f in report:
+        print(f"\nRule ID: {f['rule_id']}")
+        print(f"Title: {f['title']}")
+        print(f"Severity: {f['severity']}")
+        print(f"Resource ID: {f['resource_id']}")
+        print(f"Resource Type: {f['resource_type']}")
+        print(f"Region: {f['region']}")
+        print(f"Details: {f['details']}")
+
+    print("\n[NIRIKSHAK] AWS scan report generated.")
