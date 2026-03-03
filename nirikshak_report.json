@@ -1,6 +1,6 @@
 {
-    "scan_id": "d3475497-85c4-4b5d-bef4-9c9fbce3f54b",
-    "scan_timestamp": "2026-02-16T01:32:33.748152",
+    "scan_id": "b6b498e7-40ba-4e68-afc3-8b141034e9f1",
+    "scan_timestamp": "2026-02-19T13:17:55.153617",
     "risk_score": 21,
     "summary": {
         "CRITICAL": 1,
@@ -19,7 +19,7 @@
             "resource_type": "s3_bucket",
             "region": "ap-south-1",
             "details": "Matched condition: public_access_block.BlockPublicAcls == false",
-            "detected_at": "2026-02-15T20:02:33.755018"
+            "detected_at": "2026-02-19T07:47:55.162041"
         },
         {
             "rule_id": "AWS-S3-002",
@@ -30,7 +30,7 @@
             "resource_type": "s3_bucket",
             "region": "ap-south-1",
             "details": "Matched condition: encryption_enabled == false",
-            "detected_at": "2026-02-15T20:02:33.755018"
+            "detected_at": "2026-02-19T07:47:55.162041"
         },
         {
             "rule_id": "AWS-EC2-001",
@@ -41,7 +41,7 @@
             "resource_type": "security_group",
             "region": "ap-south-1",
             "details": "Matched condition: SSH open to 0.0.0.0/0",
-            "detected_at": "2026-02-15T20:02:33.755018"
+            "detected_at": "2026-02-19T07:47:55.162041"
         }
     ]
 }
