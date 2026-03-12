@@ -136,7 +136,7 @@ Nirikshak follows a modular, rule-driven architecture for clarity and auditabili
 The prototype demonstrates a complete scanning lifecycle:
 
 1. **Project Initialization:** Modular setup with AWS adapter, core engine, rules, and reports.
-2. **CLI Execution:** Run `python cli.py scan aws` to initiate scan.
+2. **CLI Execution:** Run python file to initiate scan.
 3. **Scan Initialization:** Generate unique Scan ID, capture timestamp, collect resources.
 4. **Rule Engine Execution:** Evaluate against CIS-aligned rules, detect misconfigurations.
 5. **Severity Aggregation:** Score risks and provide posture visibility.
@@ -185,7 +185,6 @@ The prototype demonstrates a complete scanning lifecycle:
 
 ## Team
 
-**Fly High**
 
 - **M Kishoreraj (Team Lead):** System architecture, core engine, adapters, scoring, documentation.
 - **Viswaathan Chidambaram:** CIS/NIST mapping, rule validation, benchmarking.
