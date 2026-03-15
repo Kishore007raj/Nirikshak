@@ -59,3 +59,38 @@ tmp/
 reports/*.html
 reports/*.json
 reports/*.csv
+
+#database files
+*.db
+nirikshak.db
+
+# Logs
+*.log
+
+
+# Docker
+.Dockerfile
+docker-compose.yml
+docker-compose.override.yml
+
+# Terraform
+terraform.tfstate
+terraform.tfstate.backup
+.terraform/
+
+# Git
+.git/
+
+# Node
+node_modules/
+
+# Yarn
+yarn-error.log
+
+# Go
+go.mod
+go.sum
+
+# NPM
+npm-debug.log*
+yarn-error.log
