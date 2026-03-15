@@ -1,28 +1,37 @@
+"""CSV reporting for scan findings."""
+
+from __future__ import annotations
+
 import csv
+from pathlib import Path
+from typing import List
+
+from core.models import Finding
 
 
-def generate_csv_report(findings):
+def generate_csv_report(findings: List[Finding], output_path: str = "nirikshak_report.csv") -> None:
+    """Generate a CSV report for the findings."""
 
-    with open("nirikshak_report.csv", "w", newline="") as f:
+    output_file = Path(output_path)
+    with output_file.open("w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-
         writer.writerow([
-            "Rule ID",
-            "Title",
-            "Severity",
-            "CIS",
-            "Resource Type",
-            "Resource ID"
+            "rule_id",
+            "severity",
+            "resource_id",
+            "provider",
+            "cis_reference",
+            "timestamp",
         ])
 
-        for fnd in findings:
+        for finding in findings:
             writer.writerow([
-                fnd["rule_id"],
-                fnd["title"],
-                fnd["severity"],
-                fnd["cis"],
-                fnd["resource_type"],
-                fnd["resource_id"]
+                finding.rule_id,
+                finding.severity,
+                finding.resource_id,
+                finding.provider,
+                finding.cis_reference,
+                finding.timestamp,
             ])
 
-    print("CSV report generated: nirikshak_report.csv")
+    print(f"CSV report generated: {output_file}")

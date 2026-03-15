@@ -1,0 +1,13 @@
+- id: COMPUTE-001
+  title: Compute instance is publicly accessible
+  severity: HIGH
+  cis: CIS 3.2
+  resource: ec2_instance
+  condition: has_public_ip == true
+
+- id: COMPUTE-002
+  title: Compute instance disk encryption disabled
+  severity: MEDIUM
+  cis: CIS 3.3
+  resource: ec2_instance
+  condition: disk_encrypted == false

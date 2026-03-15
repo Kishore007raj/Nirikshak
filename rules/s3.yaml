@@ -1,7 +1,7 @@
 # this s3 rule file will contain all the rules related to s3 and it will be used by the scan engine to run the s3 rules and generate the report based on the scan results.
 
 - id: AWS-S3-001
-  title: S3 Bucket Public Access Disabled
+  title: S3 Bucket Public Access Block Not Enabled
   severity: HIGH
   cis: CIS AWS 2.1.1
   resource: s3_bucket
@@ -13,3 +13,10 @@
   cis: CIS AWS 2.1.2
   resource: s3_bucket
   condition: encryption_enabled == false
+
+- id: AWS-S3-003
+  title: S3 Bucket Versioning Disabled
+  severity: LOW
+  cis: CIS AWS 2.1.3
+  resource: s3_bucket
+  condition: versioning_enabled == false

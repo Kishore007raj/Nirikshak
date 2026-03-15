@@ -1,24 +1,70 @@
-#this loader file is used to load the configuration files and it will contain all the logic related to loading the configuration files for the application.
+"""Rule loader for Nirikshak.
+
+Rules are defined as YAML files under the rules/ directory.
+Each rule is a YAML document that describes a security check.
+
+The loader normalizes the rule schema so the engine can execute checks consistently.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Any, Dict, List, Union
 
 import yaml
-import os
 
-def load_rules():
-    #Phase 3 will load YAML/JSON rules here and it will return the rules in a structured format to be used by the rule engine to run the scan and generate the report.
-    
-    rules = []
-    rules_path = "rules"
+ROOT_DIR = Path(__file__).resolve().parents[1]
+RULES_DIR = ROOT_DIR / "rules"
 
-    for file in os.listdir(rules_path):
-        if file.endswith(".yaml") or file.endswith(".yml"):
-            with open(os.path.join(rules_path, file), "r") as f:
-                rule = yaml.safe_load(f)
-                # YAML files may define a single rule (dict) or a list of rules.
-                # Normalize to a flat list of rule dicts for the engine.
-                if isinstance(rule, list):
-                    rules.extend(rule)
-                elif isinstance(rule, dict):
-                    rules.append(rule)
-                # ignore other types
+
+def load_rules(rules_path: Union[str, Path] = RULES_DIR) -> List[Dict[str, Any]]:
+    """Load all rule definitions from the specified rules directory.
+
+    Returns a list of normalized rule dictionaries.
+    """
+
+    rules: List[Dict[str, Any]] = []
+
+    rules_path_obj = Path(rules_path) if isinstance(rules_path, str) else rules_path
+    if not rules_path_obj.is_dir():
+        return rules
+
+    for filename in rules_path_obj.iterdir():
+        if filename.suffix not in {".yaml", ".yml"}:
+            continue
+
+        with filename.open("r", encoding="utf-8") as f:
+            loaded = yaml.safe_load(f)
+
+        if not loaded:
+            continue
+
+        if isinstance(loaded, dict):
+            loaded = [loaded]
+
+        if not isinstance(loaded, list):
+            continue
+
+        for raw_rule in loaded:
+            if not isinstance(raw_rule, dict):
+                continue
+
+            # Normalize keys for compatibility with older rule formats
+            rule: Dict[str, Any] = {
+                "id": raw_rule.get("id") or raw_rule.get("rule_id"),
+                "title": raw_rule.get("title"),
+                "severity": raw_rule.get("severity"),
+                "cis_reference": raw_rule.get("cis_reference") or raw_rule.get("cis"),
+                "resource_type": raw_rule.get("resource_type") or raw_rule.get("resource"),
+                "check": raw_rule.get("check") or raw_rule.get("condition"),
+                # allow additional metadata to pass through
+                **{k: v for k, v in raw_rule.items() if k not in {"id", "rule_id", "title", "severity", "cis_reference", "cis", "resource_type", "resource", "check", "condition"}},
+            }
+
+            if not rule["id"] or not rule["resource_type"] or not rule["check"]:
+                # Skip incomplete rules
+                continue
+
+            rules.append(rule)
 
     return rules

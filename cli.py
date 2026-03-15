@@ -1,27 +1,95 @@
-#this cli file is used to run the application from the command line and define the whole contract of the application
+"""Command-line interface for Nirikshak."""
 
-#this file will contain the logic to run the application from the command line and it will also contain the logic to parse the command line arguments and run the appropriate functions based on the command line arguments passed by the user.
+from __future__ import annotations
 
-import typer #for command line interface
-from aws.adapter import run_aws_scan #for running the aws scan
+import logging
+from typing import Optional
 
-#create a typer app instance
+import typer
+
+from cloud.scanner import collect_resources
+from core.runner import run_scan
+from database.sqlite import init_db, save_scan_result
+from reports.csv_report import generate_csv_report
+from reports.json_report import generate_json_report
+
 app = typer.Typer(help="Nirikshak - Cloud Security Misconfiguration Scanner")
+logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 
-scan_app = typer.Typer(help="Scan cloud providers for misconfigurations")
 
-@scan_app.command() #this command will run the aws scan
-def aws(
-    region: str = typer.Option("ap-south-1", help="AWS region"),
-    profile: str = typer.Option(None, help="AWS profile"),
+def _print_summary(scan_result):
+    logging.info("Scan completed")
+    logging.info("Scan ID: %s", scan_result.scan_id)
+    logging.info("Provider: %s", scan_result.provider)
+    logging.info("Mode: %s", scan_result.mode)
+    logging.info("Timestamp: %s", scan_result.timestamp)
+
+    for severity, count in scan_result.severity_count.items():
+        logging.info("%s: %s", severity, count)
+
+    logging.info("Risk score: %s", scan_result.risk_score)
+
+
+def _run_scan(
+    provider: str,
+    mode: str,
+    region: Optional[str],
+    profile: Optional[str],
+    output_json: str,
+    output_csv: str,
 ):
-    #this function will run the aws scan based on the provider argument and in the future we will add for other cloud providers as well like azure and gcp
+    """Run a full scan and emit reports."""
 
-        run_aws_scan(region, profile)
+    resources = collect_resources(provider, mode, region=region, profile=profile)
+    scan_result = run_scan(provider, mode, resources)
+
+    init_db()
+    save_scan_result(scan_result)
+
+    generate_json_report(scan_result, output_json)
+    generate_csv_report(scan_result.findings, output_csv)
+
+    _print_summary(scan_result)
 
 
-# add the scan sub-app to the main app
-app.add_typer(scan_app, name="scan")
+@app.command()
+def scan(
+    provider: str = typer.Argument(..., help="Cloud provider name (aws, azure, gcp)"),
+    region: Optional[str] = typer.Option(None, help="Region to scan (if supported)."),
+    profile: Optional[str] = typer.Option(None, help="Cloud provider profile to use."),
+    output_json: str = typer.Option("nirikshak_report.json", help="Output JSON report path."),
+    output_csv: str = typer.Option("nirikshak_report.csv", help="Output CSV report path."),
+):
+    """Run a live scan against a cloud provider (requires credentials)."""
+
+    _run_scan(
+        provider=provider,
+        mode="real",
+        region=region,
+        profile=profile,
+        output_json=output_json,
+        output_csv=output_csv,
+    )
+
+
+@app.command()
+def demo(
+    provider: str = typer.Argument(..., help="Cloud provider name (aws, azure, gcp)"),
+    region: Optional[str] = typer.Option(None, help="Region to use for demo resources."),
+    output_json: str = typer.Option("nirikshak_report.json", help="Output JSON report path."),
+    output_csv: str = typer.Option("nirikshak_report.csv", help="Output CSV report path."),
+):
+    """Run a demo scan using local fixture data."""
+
+    _run_scan(
+        provider=provider,
+        mode="demo",
+        region=region,
+        profile=None,
+        output_json=output_json,
+        output_csv=output_csv,
+    )
+
 
 if __name__ == "__main__":
     app()

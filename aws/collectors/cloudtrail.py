@@ -1,23 +1,65 @@
-#this file is used to collect the s3 buckets in the AWS account and it will contain all the logic related to collecting the s3 buckets in the AWS account and in the future we will add more functionality to this file as we progress with the development of the application.
+"""AWS CloudTrail collectors."""
+
+from __future__ import annotations
 
 import json
+from pathlib import Path
+from typing import List, Optional
+
 from core.models import Resource
 
+ROOT_DIR = Path(__file__).resolve().parents[2]
 
-def collect_cloudtrail_trails(region, profile):
 
-    with open("demo_data/cloudtrail.json") as f:
-        trails = json.load(f)
+def collect_cloudtrail_trails(region: str, profile: Optional[str] = None, mode: str = "demo") -> List[Resource]:
+    """Collect CloudTrail trail configurations."""
 
-    resources = []
+    if mode == "demo":
+        with open(ROOT_DIR / "demo_data" / "cloudtrail.json", "r", encoding="utf-8") as f:
+            trails = json.load(f)
+
+        resources: List[Resource] = []
+        for trail in trails:
+            resources.append(
+                Resource(
+                    resource_type="cloudtrail",
+                    resource_id=trail.get("trail_name"),
+                    region=region,
+                    provider="aws",
+                    config=trail,
+                )
+            )
+
+        return resources
+
+    try:
+        import boto3
+        from botocore.exceptions import ClientError
+    except ImportError:
+        raise RuntimeError("boto3 is required for real AWS scanning")
+
+    session = boto3.Session(profile_name=profile, region_name=region)
+    ct = session.client("cloudtrail")
+
+    resources: List[Resource] = []
+
+    try:
+        resp = ct.describe_trails(includeShadowTrails=False)
+        trails = resp.get("trailList", [])
+    except ClientError:
+        trails = []
 
     for trail in trails:
         resources.append(
             Resource(
                 resource_type="cloudtrail",
-                resource_id=trail["trail_name"],
+                resource_id=trail.get("Name"),
                 region=region,
-                config=trail
+                provider="aws",
+                config={
+                    "is_multi_region": trail.get("IsMultiRegionTrail"),
+                    "s3_bucket": trail.get("S3BucketName"),
+                },
             )
         )
 

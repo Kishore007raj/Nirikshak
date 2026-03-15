@@ -1,21 +1,45 @@
 #this models file inside the core directory is used to define the data models for the application and it will contain all the classes and functions related to the data models of the application and in the future we will add more classes and functions related to the data models as we progress with the development of the application.
 
-from dataclasses import dataclass
-from typing import List, Dict, Any
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
 
-#this code is written for defining the data model for a resource and it will be used to store the resource information in a structured format and it will be used by the collectors to return resources.
+# Data models used across the Nirikshak pipeline.
+# The Resource model represents a normalized cloud resource that can be evaluated by the rule engine.
 @dataclass
 class Resource:
     resource_type: str
     resource_id: str
     region: str
     config: Dict[str, Any]
+    provider: str = "aws"
 
-#this code is written for defining the data model for the scan result and it will be used to store the scan results in a structured format and it will also be used to generate the report in the future.
+    @property
+    def configuration(self) -> Dict[str, Any]:
+        """Backward-compatible accessor for configuration data."""
+        return self.config
+
+
 @dataclass
-class ScanResult:
+class Finding:
+    rule_id: str
+    title: str
+    severity: str
+    provider: str
     resource_id: str
     resource_type: str
-    misconfigurations: List[Dict[str, Any]]
     region: str
+    cis_reference: str
+    timestamp: str
+    details: str
+
+
+@dataclass
+class ScanResult:
+    scan_id: str
     provider: str
+    mode: str
+    timestamp: str
+    resources: List[Resource] = field(default_factory=list)
+    findings: List[Finding] = field(default_factory=list)
+    severity_count: Dict[str, int] = field(default_factory=dict)
+    risk_score: int = 0

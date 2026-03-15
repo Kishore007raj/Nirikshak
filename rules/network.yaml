@@ -1,0 +1,20 @@
+- id: NETWORK-001
+  title: Network security group allows traffic from anywhere
+  severity: CRITICAL
+  cis: CIS 4.1
+  resource: security_group
+  condition: open_to_world == true
+
+- id: NETWORK-002
+  title: SSH port open to world
+  severity: CRITICAL
+  cis: CIS 4.1
+  resource: security_group
+  condition: open_ssh == true
+
+- id: NETWORK-003
+  title: RDP port open to world
+  severity: HIGH
+  cis: CIS 4.1
+  resource: security_group
+  condition: open_rdp == true

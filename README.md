@@ -131,6 +131,7 @@ Nirikshak follows a modular, rule-driven architecture for clarity and auditabili
 5. **Scoring:** Findings classified by severity and scored.
 6. **Reporting:** Results exported in JSON and CSV formats.
 
+
 ## Prototype Workflow
 
 The prototype demonstrates a complete scanning lifecycle:
