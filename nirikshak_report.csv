@@ -1,4 +1,9 @@
-Rule ID,Title,Severity,CIS,Resource Type,Resource ID
-AWS-S3-001,S3 Bucket Public Access Disabled,HIGH,CIS AWS 2.1.1,s3_bucket,public-bucket
-AWS-S3-002,S3 Bucket Encryption Disabled,MEDIUM,CIS AWS 2.1.2,s3_bucket,public-bucket
-AWS-EC2-001,Security Group Allows SSH from Anywhere,CRITICAL,CIS AWS 4.1,security_group,sg-123
+rule_id,severity,resource_id,provider,cis_reference,timestamp
+AWS-S3-001,HIGH,public-bucket,aws,CIS AWS 2.1.1,2026-03-15T22:07:02.465620
+AWS-S3-002,MEDIUM,public-bucket,aws,CIS AWS 2.1.2,2026-03-15T22:07:02.465620
+NETWORK-001,CRITICAL,sg-123,aws,CIS 4.1,2026-03-15T22:07:02.465620
+NETWORK-002,CRITICAL,sg-123,aws,CIS 4.1,2026-03-15T22:07:02.465620
+AWS-EC2-001,CRITICAL,sg-123,aws,CIS AWS 4.1,2026-03-15T22:07:02.465620
+COMPUTE-001,HIGH,i-0123456789abcdef0,aws,CIS 3.2,2026-03-15T22:07:02.465620
+COMPUTE-002,MEDIUM,i-0123456789abcdef0,aws,CIS 3.3,2026-03-15T22:07:02.465620
+IDENTITY-002,HIGH,admin-user,aws,CIS AWS 1.2,2026-03-15T22:07:02.465620

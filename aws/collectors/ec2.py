@@ -1,4 +1,12 @@
-"""AWS EC2 / Security Group collectors."""
+"""
+EC2 collector.
+
+Retrieves EC2 instance metadata including:
+- instance IDs
+- security groups
+- public IP exposure
+- monitoring configuration
+"""
 
 from __future__ import annotations
 

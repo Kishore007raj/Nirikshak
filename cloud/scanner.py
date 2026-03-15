@@ -1,7 +1,8 @@
-"""Cloud provider scanning orchestration.
+"""
+Cloud scanning orchestrator.
 
-The scanner abstracts cloud-specific collection logic and ensures every provider
-returns a normalized set of resources that the rest of the pipeline can process.
+Determines which cloud provider to scan
+and invokes the appropriate adapter.
 """
 
 from __future__ import annotations

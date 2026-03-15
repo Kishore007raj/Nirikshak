@@ -1,4 +1,9 @@
-"""Terraform plan JSON parsing utilities."""
+"""
+Terraform plan parser.
+
+Extracts resources from terraform plan JSON
+to detect misconfigurations before deployment.
+"""
 
 from __future__ import annotations
 

@@ -1,4 +1,9 @@
-"""Azure adapter stubs for demo mode."""
+"""
+CloudTrail collector.
+
+Checks whether CloudTrail logging is enabled
+for audit and compliance visibility.
+"""
 
 from __future__ import annotations
 

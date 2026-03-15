@@ -1,5 +1,9 @@
-"""AWS IAM collectors."""
+"""
+Extended EC2 instance collector.
 
+Fetches detailed instance configuration
+required for security rule evaluation.
+"""
 from __future__ import annotations
 
 import json

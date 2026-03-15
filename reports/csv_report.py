@@ -1,4 +1,7 @@
-"""CSV reporting for scan findings."""
+"""
+Exports scan findings into CSV format
+for compliance audits and external analysis.
+"""
 
 from __future__ import annotations
 

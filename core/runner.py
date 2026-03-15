@@ -1,4 +1,9 @@
-"""Orchestrates a scan run: collect resources, evaluate rules, score, and report."""
+"""
+Scan runner.
+
+Coordinates the entire scanning pipeline:
+collection -> normalization -> rule evaluation -> reporting.
+"""
 
 from __future__ import annotations
 

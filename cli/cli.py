@@ -1,4 +1,14 @@
-"""Command-line interface for Nirikshak."""
+"""
+CLI entrypoint for Nirikshak.
+
+Handles user commands such as:
+- scan aws
+- scan azure
+- scan gcp
+
+Initializes scan lifecycle, loads configuration,
+and triggers the cloud scanning pipeline.
+"""
 
 from __future__ import annotations
 

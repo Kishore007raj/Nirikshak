@@ -1,4 +1,7 @@
-"""Report generation utilities."""
+"""
+Generates structured JSON reports containing
+scan results, severity summaries, and findings.
+"""
 
 from __future__ import annotations
 

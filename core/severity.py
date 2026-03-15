@@ -1,4 +1,9 @@
-"""Severity scoring helpers."""
+"""
+Severity model.
+
+Defines severity levels and risk scoring logic
+for detected misconfigurations.
+"""
 
 from typing import Dict, List
 

@@ -1,7 +1,12 @@
-"""AWS S3 collectors for Nirikshak.
-
-This module supports both demo mode (using local JSON fixtures) and a real scan via boto3.
 """
+S3 collector.
+
+Fetches bucket configuration including:
+- ACL settings
+- encryption configuration
+- logging status
+"""
+
 
 from __future__ import annotations
 

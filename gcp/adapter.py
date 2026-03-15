@@ -1,4 +1,10 @@
-"""GCP adapter stubs for demo mode."""
+"""
+GCP adapter for Nirikshak.
+
+Collects configuration data from Google Cloud
+services including compute instances,
+storage buckets, and firewall rules.
+"""
 
 from __future__ import annotations
 

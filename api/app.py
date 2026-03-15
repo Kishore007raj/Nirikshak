@@ -1,4 +1,12 @@
-"""FastAPI application for Nirikshak."""
+"""
+FastAPI application for Nirikshak.
+
+Provides REST API endpoints to:
+- start scans
+- retrieve scan results
+- fetch findings
+- expose reports to the dashboard
+"""
 
 from __future__ import annotations
 

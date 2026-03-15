@@ -1,4 +1,12 @@
-"""AWS adapter to collect normalized resources from AWS."""
+"""
+AWS adapter for Nirikshak.
+
+Acts as the bridge between the scanner engine
+and AWS services using boto3.
+
+Coordinates resource collectors and returns
+normalized resource metadata.
+"""
 
 from typing import List, Optional
 

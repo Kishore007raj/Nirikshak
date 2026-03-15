@@ -1,3 +1,10 @@
+"""
+Rule loader.
+
+Parses YAML rule files and converts them
+into executable rule objects.
+"""
+
 #this models file inside the core directory is used to define the data models for the application and it will contain all the classes and functions related to the data models of the application and in the future we will add more classes and functions related to the data models as we progress with the development of the application.
 
 from dataclasses import dataclass, field

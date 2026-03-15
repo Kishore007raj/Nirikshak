@@ -1,47 +1,112 @@
 {
-    "scan_id": "b6b498e7-40ba-4e68-afc3-8b141034e9f1",
-    "scan_timestamp": "2026-02-19T13:17:55.153617",
-    "risk_score": 21,
+    "scan_id": "d9e62260-621e-4528-b1da-efd5c735ec0d",
+    "scan_timestamp": "2026-03-15T22:07:02.462703",
+    "provider": "aws",
+    "mode": "demo",
+    "risk_score": 59,
     "summary": {
-        "CRITICAL": 1,
-        "HIGH": 1,
-        "MEDIUM": 1,
+        "CRITICAL": 3,
+        "HIGH": 3,
+        "MEDIUM": 2,
         "LOW": 0
     },
-    "total_findings": 3,
+    "total_findings": 8,
     "findings": [
         {
             "rule_id": "AWS-S3-001",
-            "title": "S3 Bucket Public Access Disabled",
+            "title": "S3 Bucket Public Access Block Not Enabled",
             "severity": "HIGH",
-            "cis": "CIS AWS 2.1.1",
+            "provider": "aws",
             "resource_id": "public-bucket",
             "resource_type": "s3_bucket",
-            "region": "ap-south-1",
-            "details": "Matched condition: public_access_block.BlockPublicAcls == false",
-            "detected_at": "2026-02-19T07:47:55.162041"
+            "region": null,
+            "cis_reference": "CIS AWS 2.1.1",
+            "timestamp": "2026-03-15T22:07:02.465620",
+            "details": "Rule 'AWS-S3-001' matched for resource 'public-bucket'"
         },
         {
             "rule_id": "AWS-S3-002",
             "title": "S3 Bucket Encryption Disabled",
             "severity": "MEDIUM",
-            "cis": "CIS AWS 2.1.2",
+            "provider": "aws",
             "resource_id": "public-bucket",
             "resource_type": "s3_bucket",
-            "region": "ap-south-1",
-            "details": "Matched condition: encryption_enabled == false",
-            "detected_at": "2026-02-19T07:47:55.162041"
+            "region": null,
+            "cis_reference": "CIS AWS 2.1.2",
+            "timestamp": "2026-03-15T22:07:02.465620",
+            "details": "Rule 'AWS-S3-002' matched for resource 'public-bucket'"
+        },
+        {
+            "rule_id": "NETWORK-001",
+            "title": "Network security group allows traffic from anywhere",
+            "severity": "CRITICAL",
+            "provider": "aws",
+            "resource_id": "sg-123",
+            "resource_type": "security_group",
+            "region": null,
+            "cis_reference": "CIS 4.1",
+            "timestamp": "2026-03-15T22:07:02.465620",
+            "details": "Rule 'NETWORK-001' matched for resource 'sg-123'"
+        },
+        {
+            "rule_id": "NETWORK-002",
+            "title": "SSH port open to world",
+            "severity": "CRITICAL",
+            "provider": "aws",
+            "resource_id": "sg-123",
+            "resource_type": "security_group",
+            "region": null,
+            "cis_reference": "CIS 4.1",
+            "timestamp": "2026-03-15T22:07:02.465620",
+            "details": "Rule 'NETWORK-002' matched for resource 'sg-123'"
         },
         {
             "rule_id": "AWS-EC2-001",
             "title": "Security Group Allows SSH from Anywhere",
             "severity": "CRITICAL",
-            "cis": "CIS AWS 4.1",
+            "provider": "aws",
             "resource_id": "sg-123",
             "resource_type": "security_group",
-            "region": "ap-south-1",
-            "details": "Matched condition: SSH open to 0.0.0.0/0",
-            "detected_at": "2026-02-19T07:47:55.162041"
+            "region": null,
+            "cis_reference": "CIS AWS 4.1",
+            "timestamp": "2026-03-15T22:07:02.465620",
+            "details": "Rule 'AWS-EC2-001' matched for resource 'sg-123'"
+        },
+        {
+            "rule_id": "COMPUTE-001",
+            "title": "Compute instance is publicly accessible",
+            "severity": "HIGH",
+            "provider": "aws",
+            "resource_id": "i-0123456789abcdef0",
+            "resource_type": "ec2_instance",
+            "region": null,
+            "cis_reference": "CIS 3.2",
+            "timestamp": "2026-03-15T22:07:02.465620",
+            "details": "Rule 'COMPUTE-001' matched for resource 'i-0123456789abcdef0'"
+        },
+        {
+            "rule_id": "COMPUTE-002",
+            "title": "Compute instance disk encryption disabled",
+            "severity": "MEDIUM",
+            "provider": "aws",
+            "resource_id": "i-0123456789abcdef0",
+            "resource_type": "ec2_instance",
+            "region": null,
+            "cis_reference": "CIS 3.3",
+            "timestamp": "2026-03-15T22:07:02.465620",
+            "details": "Rule 'COMPUTE-002' matched for resource 'i-0123456789abcdef0'"
+        },
+        {
+            "rule_id": "IDENTITY-002",
+            "title": "IAM user missing MFA",
+            "severity": "HIGH",
+            "provider": "aws",
+            "resource_id": "admin-user",
+            "resource_type": "iam_user",
+            "region": null,
+            "cis_reference": "CIS AWS 1.2",
+            "timestamp": "2026-03-15T22:07:02.465620",
+            "details": "Rule 'IDENTITY-002' matched for resource 'admin-user'"
         }
     ]
 }
