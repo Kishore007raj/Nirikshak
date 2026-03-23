@@ -17,24 +17,34 @@ ROOT_DIR = Path(__file__).resolve().parents[1]
 RULES_DIR = ROOT_DIR / "rules"
 
 
+import logging
+
 def load_rules(rules_path: Union[str, Path] = RULES_DIR) -> List[Dict[str, Any]]:
     """Load all rule definitions from the specified rules directory.
 
     Returns a list of normalized rule dictionaries.
     """
 
+    logger = logging.getLogger(__name__)
+
     rules: List[Dict[str, Any]] = []
 
     rules_path_obj = Path(rules_path) if isinstance(rules_path, str) else rules_path
     if not rules_path_obj.is_dir():
+        logger.warning("Rules directory not found: %s", rules_path_obj)
         return rules
 
-    for filename in rules_path_obj.iterdir():
+    # Support nested rule folders (e.g., rules/aws/, rules/azure/)
+    for filename in rules_path_obj.rglob("*"):
         if filename.suffix not in {".yaml", ".yml"}:
             continue
 
-        with filename.open("r", encoding="utf-8") as f:
-            loaded = yaml.safe_load(f)
+        try:
+            with filename.open("r", encoding="utf-8") as f:
+                loaded = yaml.safe_load(f)
+        except Exception as e:
+            logger.warning("Skipping rule file %s due to error: %s", filename, e)
+            continue
 
         if not loaded:
             continue
@@ -67,4 +77,5 @@ def load_rules(rules_path: Union[str, Path] = RULES_DIR) -> List[Dict[str, Any]]
 
             rules.append(rule)
 
+    logger.info("Loaded %s rules from %s", len(rules), rules_path_obj)
     return rules

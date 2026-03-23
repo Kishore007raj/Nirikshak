@@ -19,6 +19,9 @@ from aws.collectors.s3 import collect_s3_buckets
 from core.models import Resource
 
 
+import logging
+
+
 def collect_aws_resources(
     region: str,
     profile: Optional[str] = None,
@@ -26,11 +29,29 @@ def collect_aws_resources(
 ) -> List[Resource]:
     """Collect normalized AWS resources for the scan pipeline."""
 
-    resources: List[Resource] = []
-    resources.extend(collect_s3_buckets(region, profile, mode))
-    resources.extend(collect_security_groups(region, profile, mode))
-    resources.extend(collect_ec2_instances(region, profile, mode))
-    resources.extend(collect_iam_users(region, profile, mode))
-    resources.extend(collect_cloudtrail_trails(region, profile, mode))
+    logger = logging.getLogger(__name__)
 
+    if mode == "real":
+        try:
+            resources: List[Resource] = []
+            resources.extend(collect_s3_buckets(region, profile, mode))
+            resources.extend(collect_security_groups(region, profile, mode))
+            resources.extend(collect_ec2_instances(region, profile, mode))
+            resources.extend(collect_iam_users(region, profile, mode))
+            resources.extend(collect_cloudtrail_trails(region, profile, mode))
+            return resources
+        except Exception as e:
+            # If real AWS collection fails (missing creds, config, etc.), fall back to demo data.
+            logger.warning(
+                "AWS real collection failed (%s). Falling back to demo data.",
+                e,
+            )
+
+    # Demo mode or fallback
+    resources: List[Resource] = []
+    resources.extend(collect_s3_buckets(region, profile, "demo"))
+    resources.extend(collect_security_groups(region, profile, "demo"))
+    resources.extend(collect_ec2_instances(region, profile, "demo"))
+    resources.extend(collect_iam_users(region, profile, "demo"))
+    resources.extend(collect_cloudtrail_trails(region, profile, "demo"))
     return resources

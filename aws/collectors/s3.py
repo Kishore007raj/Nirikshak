@@ -27,7 +27,7 @@ def collect_s3_buckets(region: str, profile: Optional[str] = None, mode: str = "
     """
 
     if mode == "demo":
-        with open(ROOT_DIR / "demo_data" / "s3.json", "r", encoding="utf-8") as f:
+        with open(ROOT_DIR / "demo_data" / "aws" / "s3.json", "r", encoding="utf-8") as f:
             buckets = json.load(f)
 
         resources: List[Resource] = []

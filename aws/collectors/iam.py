@@ -19,7 +19,7 @@ def collect_iam_users(region: str, profile: Optional[str] = None, mode: str = "d
     """Collect IAM users and their security posture."""
 
     if mode == "demo":
-        with open(ROOT_DIR / "demo_data" / "iam_users.json", "r", encoding="utf-8") as f:
+        with open(ROOT_DIR / "demo_data" / "aws" / "iam_users.json", "r", encoding="utf-8") as f:
             users = json.load(f)
 
         resources: List[Resource] = []

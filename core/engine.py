@@ -89,7 +89,13 @@ def _compute_facts(resource: Resource) -> Dict[str, Any]:
         facts["public_access_block.BlockPublicPolicy"] = pab.get("BlockPublicPolicy")
         facts["public_access_block.IgnorePublicAcls"] = pab.get("IgnorePublicAcls")
         facts["public_access_block.RestrictPublicBuckets"] = pab.get("RestrictPublicBuckets")
-        facts["encryption_enabled"] = cfg.get("encryption_enabled")
+        
+        # Azure storage account specific
+        facts["public_access"] = cfg.get("public_access", False)
+        facts["public_access_enabled"] = cfg.get("public_access", False)
+        facts["allow_blob_public_access"] = cfg.get("public_access", False)
+        
+        facts["encryption_enabled"] = cfg.get("encryption", cfg.get("encryption_enabled"))
         facts["versioning_enabled"] = cfg.get("versioning_enabled")
 
     # Network security group / firewall rules
@@ -100,28 +106,51 @@ def _compute_facts(resource: Resource) -> Dict[str, Any]:
         facts["open_to_world"] = False
 
         for perm in inbound_rules:
-            ports = []
-            # AWS style
-            if isinstance(perm.get("FromPort"), int) and isinstance(perm.get("ToPort"), int):
-                ports = list(range(perm["FromPort"], perm["ToPort"] + 1))
-                cidrs = [r.get("CidrIp") for r in perm.get("IpRanges", []) if r.get("CidrIp")]
-            else:
-                # Generic structure
-                ports = [perm.get("port")]
-                cidrs = [perm.get("cidr")]
+            if isinstance(perm, dict):
+                ports = []
+                sources = []
+                
+                # AWS style (FromPort/ToPort)
+                if isinstance(perm.get("FromPort"), int) and isinstance(perm.get("ToPort"), int):
+                    ports = list(range(perm["FromPort"], perm["ToPort"] + 1))
+                    cidrs = [r.get("CidrIp") for r in perm.get("IpRanges", []) if r.get("CidrIp")]
+                    sources.extend(cidrs)
+                else:
+                    # Generic/Azure style structure
+                    port = perm.get("port")
+                    if port:
+                        try:
+                            ports = [int(port) if isinstance(port, (int, str)) else port]
+                        except (ValueError, TypeError):
+                            ports = [port]
+                    
+                    source = perm.get("source") or perm.get("cidr") or perm.get("source_address_prefix")
+                    if source:
+                        sources = [source] if isinstance(source, str) else source
 
-            for cidr in cidrs:
-                if cidr == "0.0.0.0/0":
+                # Check for open access
+                for source in sources:
+                    if source in {"0.0.0.0/0", "*", "0.0.0.0"}:
+                        facts["open_to_world"] = True
+                        if 22 in ports or "*" in ports:
+                            facts["open_ssh"] = True
+                        if 3389 in ports or "*" in ports:
+                            facts["open_rdp"] = True
+                    
+            # Simplified check - if any source is world-open
+            if isinstance(perm, dict):
+                source = perm.get("source") or perm.get("cidr")
+                if source in {"0.0.0.0/0", "*"}:
                     facts["open_to_world"] = True
-                    if 22 in ports:
-                        facts["open_ssh"] = True
-                    if 3389 in ports:
-                        facts["open_rdp"] = True
+
+        # Shorthand checks
+        facts["open_all_ports"] = facts.get("open_to_world", False)
 
     # Compute / VM
-    if resource.resource_type in {"ec2_instance", "virtual_machine", "compute_instance"}:
+    if resource.resource_type in {"ec2_instance", "virtual_machine", "vm", "compute_instance"}:
         facts["has_public_ip"] = bool(cfg.get("public_ip") or cfg.get("public_ip_address") or cfg.get("public_ips"))
         facts["disk_encrypted"] = cfg.get("disk_encrypted")
+        facts["encryption_enabled"] = cfg.get("encryption_enabled")
         facts["ebs_encrypted"] = cfg.get("ebs_encrypted")
 
     # Identity

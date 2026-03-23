@@ -1,0 +1,11 @@
+# Azure Virtual Machine Security Rules
+
+- id: VM_NO_ENCRYPTION
+  title: Virtual Machine Disk Encryption Not Enabled
+  resource_type: vm
+  severity: HIGH
+  cis_reference: "7.1"
+  check: "encryption_enabled == false"
+  description: |
+    Disk encryption is not enabled on the virtual machine.
+    Azure Disk Encryption should be enabled for OS and data disks.

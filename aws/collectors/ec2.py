@@ -23,7 +23,7 @@ def collect_security_groups(region: str, profile: Optional[str] = None, mode: st
     """Collect security groups and normalize inbound rules."""
 
     if mode == "demo":
-        with open(ROOT_DIR / "demo_data" / "security_groups.json", "r", encoding="utf-8") as f:
+        with open(ROOT_DIR / "demo_data" / "aws" / "security_groups.json", "r", encoding="utf-8") as f:
             sgs = json.load(f)
 
         resources: List[Resource] = []

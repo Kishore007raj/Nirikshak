@@ -60,16 +60,15 @@ reports/*.html
 reports/*.json
 reports/*.csv
 
-#database files
+# Database files
 *.db
 nirikshak.db
 
 # Logs
 *.log
 
-
 # Docker
-.Dockerfile
+Dockerfile
 docker-compose.yml
 docker-compose.override.yml
 
@@ -94,3 +93,18 @@ go.sum
 # NPM
 npm-debug.log*
 yarn-error.log
+
+# New file structure
+**/dist/
+**/node_modules/
+**/reports/
+**/terraform.tfstate
+**/terraform.tfstate.backup
+**/.terraform/
+**/.git/
+**/.DS_Store
+**/__pycache__/
+**/*.log
+**/*.tmp
+**/temp/
+**/tmp/

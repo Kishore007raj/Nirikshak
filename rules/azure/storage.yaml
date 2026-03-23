@@ -1,0 +1,21 @@
+# Azure Storage Account Security Rules
+
+- id: STORAGE_PUBLIC
+  title: Storage Account Public Access Enabled
+  resource_type: storage_account
+  severity: CRITICAL
+  cis_reference: "3.6"
+  check: "public_access == true"
+  description: |
+    Blob public access is enabled on the storage account.
+    This allows unauthenticated users to read blob data.
+
+- id: STORAGE_NO_ENCRYPTION
+  title: Storage Account Encryption Not Enabled
+  resource_type: storage_account
+  severity: HIGH
+  cis_reference: "3.7"
+  check: "encryption == false"
+  description: |
+    Encryption is not enabled on the storage account.
+    Data at rest should be encrypted using Azure Storage Service Encryption.

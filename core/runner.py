@@ -17,6 +17,9 @@ from .severity import calculate_risk_score, summarize_severity
 from .models import Finding, Resource, ScanResult
 
 
+import logging
+
+
 def run_scan(
     provider: str,
     mode: str,
@@ -29,14 +32,25 @@ def run_scan(
     resources (from cloud APIs, demo data, or IaC plans) and passing them in.
     """
 
+    logger = logging.getLogger(__name__)
+
     scan_id = str(uuid.uuid4())
     timestamp = datetime.utcnow().isoformat()
 
+    logger.info("Loading rules")
     rules = load_rules()
+
+    logger.info("Running engine on %s resources", len(resources))
     findings = run_engine(resources, rules)
 
     severity_count = summarize_severity(findings)
     risk_score = calculate_risk_score(findings)
+
+    logger.info(
+        "Scan complete: %s findings (risk score=%s)",
+        len(findings),
+        risk_score,
+    )
 
     scan_result = ScanResult(
         scan_id=scan_id,

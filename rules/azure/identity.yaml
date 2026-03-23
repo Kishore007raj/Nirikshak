@@ -1,0 +1,11 @@
+# Azure Identity and Access Management Rules
+
+- id: IDENTITY_MFA_DISABLED
+  title: MFA Not Enabled for User
+  resource_type: azure_ad_user
+  severity: HIGH
+  cis_reference: "4.1"
+  check: "mfa_enabled == false"
+  description: |
+    Multi-Factor Authentication (MFA) is not enabled for the user account.
+    MFA should be enabled for all critical accounts.

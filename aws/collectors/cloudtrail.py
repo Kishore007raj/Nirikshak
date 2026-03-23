@@ -20,7 +20,7 @@ def collect_cloudtrail_trails(region: str, profile: Optional[str] = None, mode: 
     """Collect CloudTrail trail configurations."""
 
     if mode == "demo":
-        with open(ROOT_DIR / "demo_data" / "cloudtrail.json", "r", encoding="utf-8") as f:
+        with open(ROOT_DIR / "demo_data" / "aws" / "cloudtrail.json", "r", encoding="utf-8") as f:
             trails = json.load(f)
 
         resources: List[Resource] = []

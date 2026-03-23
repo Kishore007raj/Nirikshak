@@ -1,0 +1,11 @@
+# Azure Logging and Monitoring Rules
+
+- id: LOGGING_NOT_ENABLED
+  title: Logging Not Enabled
+  resource_type: storage_account
+  severity: MEDIUM
+  cis_reference: "5.1"
+  check: "logging_enabled == false"
+  description: |
+    Logging is not enabled for the resource.
+    Enable logging for audit trails and compliance.

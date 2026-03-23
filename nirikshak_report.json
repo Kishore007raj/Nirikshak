@@ -1,0 +1,15 @@
+{
+    "scan_id": "83aed52a-6c6d-4261-be3c-64175cdb8ce2",
+    "scan_timestamp": "2026-03-23T19:44:27.585494",
+    "provider": "gcp",
+    "mode": "real",
+    "risk_score": 0,
+    "summary": {
+        "CRITICAL": 0,
+        "HIGH": 0,
+        "MEDIUM": 0,
+        "LOW": 0
+    },
+    "total_findings": 0,
+    "findings": []
+}

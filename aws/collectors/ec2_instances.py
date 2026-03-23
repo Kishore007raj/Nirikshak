@@ -20,7 +20,7 @@ def collect_ec2_instances(region: str, profile: Optional[str] = None, mode: str 
     """Collect EC2/compute instances for scanning."""
 
     if mode == "demo":
-        with open(ROOT_DIR / "demo_data" / "ec2_instances.json", "r", encoding="utf-8") as f:
+        with open(ROOT_DIR / "demo_data" / "aws" / "ec2_instances.json", "r", encoding="utf-8") as f:
             instances = json.load(f)
 
         resources: List[Resource] = []
