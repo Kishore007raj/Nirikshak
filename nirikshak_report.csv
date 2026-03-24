@@ -1,1 +1,5 @@
 rule_id,severity,resource_id,provider,cis_reference,timestamp
+STORAGE_PUBLIC,CRITICAL,/subscriptions/7f159a80-280a-4256-9894-b470e626e7c0/resourceGroups/nirikshak-rg/providers/Microsoft.Storage/storageAccounts/nirikshak007demo,azure,3.6,2026-03-23T20:57:57.154518
+NSG_OPEN_ALL,CRITICAL,/subscriptions/7f159a80-280a-4256-9894-b470e626e7c0/resourceGroups/nirikshak-rg/providers/Microsoft.Network/networkSecurityGroups/nirikshak-nsg,azure,6.2,2026-03-23T20:57:57.154518
+NSG_SSH_OPEN,HIGH,/subscriptions/7f159a80-280a-4256-9894-b470e626e7c0/resourceGroups/nirikshak-rg/providers/Microsoft.Network/networkSecurityGroups/nirikshak-nsg,azure,6.3,2026-03-23T20:57:57.154518
+NSG_RDP_OPEN,HIGH,/subscriptions/7f159a80-280a-4256-9894-b470e626e7c0/resourceGroups/nirikshak-rg/providers/Microsoft.Network/networkSecurityGroups/nirikshak-nsg,azure,6.4,2026-03-23T20:57:57.154518

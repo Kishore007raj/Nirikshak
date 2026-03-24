@@ -1,0 +1,28 @@
+#this file is used for defining the cloud profiles and their associated regions. It can be extended to include more profiles and regions as needed.
+
+cloud_profiles:
+  - name: aws
+    regions:
+      - name: us-east-1
+      - name: us-west-1
+      - name: eu-west-1
+  - name: azure
+    regions:
+      - name: eastus
+      - name: westus
+      - name: westeurope
+      - name: centralindia
+      - name: southeastasia
+      - name: uaenorth
+      - name: malaysiawest
+      - name: koreacentral
+  - name: gcp
+    regions:
+      - name: us-central1
+      - name: us-west1
+      - name: europe-west1
+      - name: asia-east1
+      - name: australia-southeast1
+      - name: southamerica-east1
+      - name: northamerica-northeast1
+    

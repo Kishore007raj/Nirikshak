@@ -3,6 +3,7 @@ Azure adapter.
 
 Orchestrates collectors and normalizers to gather and normalize
 Azure resources for security scanning.
+use the AzureAdapter class to collect and normalize Azure resources. The collect_azure_resources function is deprecated and should not be used in new code.
 """
 
 from __future__ import annotations
@@ -35,6 +36,9 @@ class AzureAdapter:
         else:
             self.subscription_id = get_azure_subscription_id()
 
+        if not self.subscription_id:
+            raise ValueError("Azure subscription ID is required")
+
     def collect_and_normalize(self) -> List[Resource]:
         """Collect all Azure resources and normalize them.
 
@@ -42,16 +46,30 @@ class AzureAdapter:
             List of normalized Resource objects.
         """
         # Collect raw data from Azure
-        vms = collect_virtual_machines(self.subscription_id)
-        storage_accounts = collect_storage_accounts(self.subscription_id)
-        nsgs = collect_network_security_groups(self.subscription_id)
+        try:
+            vms = collect_virtual_machines(self.subscription_id)
+        except Exception as e:
+            print(f"VM collection failed: {e}")
+            vms = []
+
+        try:
+            storage_accounts = collect_storage_accounts(self.subscription_id)
+        except Exception as e:
+            print(f"Storage collection failed: {e}")
+            storage_accounts = []
+
+        try:
+            nsgs = collect_network_security_groups(self.subscription_id)
+        except Exception as e:
+            print(f"NSG collection failed: {e}")
+            nsgs = []
 
         # Normalize into canonical format
         resources = normalize_azure_resources(vms, storage_accounts, nsgs)
 
         return resources
 
-
+#this one is just for showcase and testing of mock up data, not to be used in production code. Please use AzureAdapter class instead.
 def collect_azure_resources(region: Optional[str] = None, profile: Optional[str] = None, mode: str = "demo") -> List[Resource]:
     """Collect normalized Azure resources.
 
