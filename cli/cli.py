@@ -34,10 +34,27 @@ def _print_summary(scan_result):
     logging.info("Mode: %s", scan_result.mode)
     logging.info("Timestamp: %s", scan_result.timestamp)
 
-    for severity, count in scan_result.severity_count.items():
-        logging.info("%s: %s", severity, count)
-
-    logging.info("Risk score: %s", scan_result.risk_score)
+    print("\n=== FINDINGS ===")
+    
+    if not scan_result.findings:
+        print("No misconfigurations found\n")
+    else:
+        for sev in ["CRITICAL", "HIGH", "MEDIUM", "LOW"]:
+            sev_findings = [f for f in scan_result.findings if f.severity == sev]
+            for f in sev_findings:
+                desc = f.description.replace("\n", " ").strip() if f.description else ""
+                print(f"{sev}: {f.title} ({f.resource_id})")
+                if desc: print(f"  Desc: {desc}")
+                if f.impact: print(f"  Impact: {f.impact}")
+                if f.fix_suggestion: print(f"  Fix: {f.fix_suggestion}")
+        print("")
+        
+    print(f"Critical: {scan_result.severity_count.get('CRITICAL', 0)}")
+    print(f"High: {scan_result.severity_count.get('HIGH', 0)}")
+    print(f"Medium: {scan_result.severity_count.get('MEDIUM', 0)}")
+    print(f"Low: {scan_result.severity_count.get('LOW', 0)}")
+    
+    print(f"\nRisk Score: {scan_result.risk_score}\n")
 
 
 def _run_scan(
@@ -57,7 +74,7 @@ def _run_scan(
     save_scan_result(scan_result)
 
     generate_json_report(scan_result, output_json)
-    generate_csv_report(scan_result.findings, output_csv)
+    generate_csv_report(scan_result, output_csv)
 
     _print_summary(scan_result)
 
@@ -72,9 +89,10 @@ def scan(
 ):
     """Run a live scan against a cloud provider (requires credentials)."""
 
+    mode = "real" if provider.lower() == "azure" else "demo"
     _run_scan(
         provider=provider,
-        mode="real",
+        mode=mode,
         region=region,
         profile=profile,
         output_json=output_json,

@@ -32,7 +32,7 @@ def init_db(db_path: str = DEFAULT_DB_PATH) -> None:
             mode TEXT NOT NULL,
             timestamp TEXT NOT NULL,
             risk_score INTEGER NOT NULL,
-            summary JSON NOT NULL
+            findings JSON NOT NULL
         )"""
     )
 
@@ -55,21 +55,38 @@ def init_db(db_path: str = DEFAULT_DB_PATH) -> None:
     conn.close()
 
 
+def save_scan(scan_result: ScanResult, db_path: str = DEFAULT_DB_PATH) -> None:
+    """Persist a scan result to the database."""
+    save_scan_result(scan_result, db_path)
+
 def save_scan_result(scan_result: ScanResult, db_path: str = DEFAULT_DB_PATH) -> None:
     """Persist a scan result and its findings to the database."""
 
     conn = _get_connection(db_path)
     cursor = conn.cursor()
 
+    import dataclasses
+
+    findings_json = []
+    for f in scan_result.findings:
+        findings_json.append({
+            "resource_id": f.resource_id,
+            "type": f.resource_type,
+            "severity": f.severity,
+            "description": f.description,
+            "impact": f.impact,
+            "fix_suggestion": f.fix_suggestion
+        })
+
     cursor.execute(
-        "INSERT OR REPLACE INTO scans (scan_id, provider, mode, timestamp, risk_score, summary) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT OR REPLACE INTO scans (scan_id, provider, mode, timestamp, risk_score, findings) VALUES (?, ?, ?, ?, ?, ?)",
         (
             scan_result.scan_id,
             scan_result.provider,
             scan_result.mode,
             scan_result.timestamp,
             scan_result.risk_score,
-            json.dumps(scan_result.severity_count),
+            json.dumps(findings_json),
         ),
     )
 
@@ -135,12 +152,31 @@ def get_scan(scan_id: str, db_path: str = DEFAULT_DB_PATH) -> Optional[ScanResul
         timestamp=row["timestamp"],
         resources=[],
         findings=findings,
-        severity_count=json.loads(row["summary"] or "{}"),
+        severity_count={}, # Fallback since we dropped summary column
         risk_score=row["risk_score"],
     )
 
     conn.close()
     return scan
+
+
+def get_scans(db_path: str = DEFAULT_DB_PATH) -> List[Dict[str, Any]]:
+    """Retrieve all scans."""
+    conn = _get_connection(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM scans ORDER BY timestamp DESC")
+    rows = cursor.fetchall()
+    
+    scans = []
+    for row in rows:
+        scans.append({
+            "scan_id": row["scan_id"],
+            "timestamp": row["timestamp"],
+            "risk_score": row["risk_score"],
+            "findings": json.loads(row["findings"] or "[]"),
+        })
+    conn.close()
+    return scans
 
 
 def list_findings(db_path: str = DEFAULT_DB_PATH) -> List[Finding]:

@@ -16,7 +16,7 @@ from typing import List, Optional
 
 from cloud.scanner import collect_resources
 from core.runner import run_scan
-from database.sqlite import init_db, save_scan_result, get_scan, list_findings
+from database.sqlite import init_db, save_scan, get_scan, list_findings, get_scans
 
 app = FastAPI(title="Nirikshak CSPM", version="0.1.0")
 
@@ -35,16 +35,17 @@ def startup_event():
 
 @app.post("/scan")
 def create_scan(request: ScanRequest):
-    """Start a new scan and persist the results."""
+    try:
+        resources = collect_resources(
+            request.provider, request.mode, region=request.region, profile=request.profile
+        )
+        scan_result = run_scan(request.provider, request.mode, resources)
 
-    resources = collect_resources(
-        request.provider, request.mode, region=request.region, profile=request.profile
-    )
-    scan_result = run_scan(request.provider, request.mode, resources)
+        save_scan(scan_result)
 
-    save_scan_result(scan_result)
-
-    return {"scan_id": scan_result.scan_id, "status": "completed"}
+        return {"scan_id": scan_result.scan_id, "status": "completed"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/scan/{scan_id}")
@@ -59,9 +60,35 @@ def get_scan(scan_id: str):
         "mode": scan.mode,
         "timestamp": scan.timestamp,
         "risk_score": scan.risk_score,
-        "severity_count": scan.severity_count,
-        "findings": [f.__dict__ for f in scan.findings],
+        "summary": {
+            "critical": scan.severity_count.get("CRITICAL", 0),
+            "high": scan.severity_count.get("HIGH", 0),
+            "medium": scan.severity_count.get("MEDIUM", 0),
+            "low": scan.severity_count.get("LOW", 0)
+        },
+        "findings": [
+            {
+                "resource_id": f.resource_id,
+                "type": f.resource_type,
+                "severity": f.severity,
+                "description": f.description,
+                "impact": f.impact,
+                "fix_suggestion": f.fix_suggestion
+            }
+            for f in scan.findings
+        ],
     }
+
+@app.get("/results")
+def get_latest_result():
+    scans = get_scans()
+    if not scans:
+        raise HTTPException(status_code=404, detail="No scans available")
+    return get_scan(scans[0]["scan_id"])
+
+@app.get("/history")
+def get_history():
+    return get_scans()
 
 
 @app.get("/findings")

@@ -1,64 +1,93 @@
 {
-    "scan_id": "a4d49b42-8399-4112-90f1-f109170b84af",
-    "scan_timestamp": "2026-03-23T20:57:57.118754",
-    "provider": "azure",
-    "mode": "real",
-    "risk_score": 20,
+    "scan_id": "27ed1312-05ad-439e-bf16-ea3747cfef44",
+    "timestamp": "2026-03-24T21:23:49.905247",
     "summary": {
-        "CRITICAL": 2,
-        "HIGH": 2,
-        "MEDIUM": 0,
-        "LOW": 0
+        "critical": 3,
+        "high": 4,
+        "medium": 3,
+        "low": 0
     },
-    "total_findings": 4,
+    "risk_score": 35,
     "findings": [
         {
-            "rule_id": "STORAGE_PUBLIC",
-            "title": "Storage Account Public Access Enabled",
-            "severity": "CRITICAL",
-            "provider": "azure",
-            "resource_id": "/subscriptions/7f159a80-280a-4256-9894-b470e626e7c0/resourceGroups/nirikshak-rg/providers/Microsoft.Storage/storageAccounts/nirikshak007demo",
-            "resource_type": "storage_account",
-            "region": "global",
-            "cis_reference": "3.6",
-            "timestamp": "2026-03-23T20:57:57.154518",
-            "details": "Rule 'STORAGE_PUBLIC' matched for resource '/subscriptions/7f159a80-280a-4256-9894-b470e626e7c0/resourceGroups/nirikshak-rg/providers/Microsoft.Storage/storageAccounts/nirikshak007demo'"
+            "resource_id": "cloudtrail-demo",
+            "type": "cloudtrail",
+            "severity": "MEDIUM",
+            "description": "",
+            "impact": "",
+            "fix_suggestion": ""
         },
         {
-            "rule_id": "NSG_OPEN_ALL",
-            "title": "Network Security Group Open to All",
-            "severity": "CRITICAL",
-            "provider": "azure",
-            "resource_id": "/subscriptions/7f159a80-280a-4256-9894-b470e626e7c0/resourceGroups/nirikshak-rg/providers/Microsoft.Network/networkSecurityGroups/nirikshak-nsg",
-            "resource_type": "network_security_group",
-            "region": "global",
-            "cis_reference": "6.2",
-            "timestamp": "2026-03-23T20:57:57.154518",
-            "details": "Rule 'NSG_OPEN_ALL' matched for resource '/subscriptions/7f159a80-280a-4256-9894-b470e626e7c0/resourceGroups/nirikshak-rg/providers/Microsoft.Network/networkSecurityGroups/nirikshak-nsg'"
-        },
-        {
-            "rule_id": "NSG_SSH_OPEN",
-            "title": "SSH Port Open to All",
+            "resource_id": "ec2_instance-demo",
+            "type": "ec2_instance",
             "severity": "HIGH",
-            "provider": "azure",
-            "resource_id": "/subscriptions/7f159a80-280a-4256-9894-b470e626e7c0/resourceGroups/nirikshak-rg/providers/Microsoft.Network/networkSecurityGroups/nirikshak-nsg",
-            "resource_type": "network_security_group",
-            "region": "global",
-            "cis_reference": "6.3",
-            "timestamp": "2026-03-23T20:57:57.154518",
-            "details": "Rule 'NSG_SSH_OPEN' matched for resource '/subscriptions/7f159a80-280a-4256-9894-b470e626e7c0/resourceGroups/nirikshak-rg/providers/Microsoft.Network/networkSecurityGroups/nirikshak-nsg'"
+            "description": "",
+            "impact": "",
+            "fix_suggestion": ""
         },
         {
-            "rule_id": "NSG_RDP_OPEN",
-            "title": "RDP Port Open to All",
+            "resource_id": "ec2_instance-demo",
+            "type": "ec2_instance",
+            "severity": "MEDIUM",
+            "description": "",
+            "impact": "",
+            "fix_suggestion": ""
+        },
+        {
+            "resource_id": "iam_user-demo",
+            "type": "iam_user",
             "severity": "HIGH",
-            "provider": "azure",
-            "resource_id": "/subscriptions/7f159a80-280a-4256-9894-b470e626e7c0/resourceGroups/nirikshak-rg/providers/Microsoft.Network/networkSecurityGroups/nirikshak-nsg",
-            "resource_type": "network_security_group",
-            "region": "global",
-            "cis_reference": "6.4",
-            "timestamp": "2026-03-23T20:57:57.154518",
-            "details": "Rule 'NSG_RDP_OPEN' matched for resource '/subscriptions/7f159a80-280a-4256-9894-b470e626e7c0/resourceGroups/nirikshak-rg/providers/Microsoft.Network/networkSecurityGroups/nirikshak-nsg'"
+            "description": "",
+            "impact": "",
+            "fix_suggestion": ""
+        },
+        {
+            "resource_id": "iam_user-demo",
+            "type": "iam_user",
+            "severity": "HIGH",
+            "description": "",
+            "impact": "",
+            "fix_suggestion": ""
+        },
+        {
+            "resource_id": "public-bucket",
+            "type": "s3_bucket",
+            "severity": "HIGH",
+            "description": "",
+            "impact": "",
+            "fix_suggestion": ""
+        },
+        {
+            "resource_id": "public-bucket",
+            "type": "s3_bucket",
+            "severity": "MEDIUM",
+            "description": "",
+            "impact": "",
+            "fix_suggestion": ""
+        },
+        {
+            "resource_id": "sg-123",
+            "type": "security_group",
+            "severity": "CRITICAL",
+            "description": "",
+            "impact": "",
+            "fix_suggestion": ""
+        },
+        {
+            "resource_id": "sg-123",
+            "type": "security_group",
+            "severity": "CRITICAL",
+            "description": "",
+            "impact": "",
+            "fix_suggestion": ""
+        },
+        {
+            "resource_id": "sg-123",
+            "type": "security_group",
+            "severity": "CRITICAL",
+            "description": "",
+            "impact": "",
+            "fix_suggestion": ""
         }
     ]
 }

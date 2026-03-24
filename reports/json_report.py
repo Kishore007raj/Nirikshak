@@ -17,13 +17,25 @@ def generate_json_report(scan_result: ScanResult, output_path: str = "nirikshak_
 
     report: Dict[str, Any] = {
         "scan_id": scan_result.scan_id,
-        "scan_timestamp": scan_result.timestamp,
-        "provider": scan_result.provider,
-        "mode": scan_result.mode,
+        "timestamp": scan_result.timestamp,
+        "summary": {
+            "critical": scan_result.severity_count.get("CRITICAL", 0),
+            "high": scan_result.severity_count.get("HIGH", 0),
+            "medium": scan_result.severity_count.get("MEDIUM", 0),
+            "low": scan_result.severity_count.get("LOW", 0),
+        },
         "risk_score": scan_result.risk_score,
-        "summary": scan_result.severity_count,
-        "total_findings": len(scan_result.findings),
-        "findings": [f.__dict__ for f in scan_result.findings],
+        "findings": [
+            {
+                "resource_id": f.resource_id,
+                "type": f.resource_type,
+                "severity": f.severity,
+                "description": f.description,
+                "impact": f.impact,
+                "fix_suggestion": f.fix_suggestion
+            }
+            for f in scan_result.findings
+        ],
     }
 
     output_file = Path(output_path)

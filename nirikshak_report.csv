@@ -1,5 +1,11 @@
-rule_id,severity,resource_id,provider,cis_reference,timestamp
-STORAGE_PUBLIC,CRITICAL,/subscriptions/7f159a80-280a-4256-9894-b470e626e7c0/resourceGroups/nirikshak-rg/providers/Microsoft.Storage/storageAccounts/nirikshak007demo,azure,3.6,2026-03-23T20:57:57.154518
-NSG_OPEN_ALL,CRITICAL,/subscriptions/7f159a80-280a-4256-9894-b470e626e7c0/resourceGroups/nirikshak-rg/providers/Microsoft.Network/networkSecurityGroups/nirikshak-nsg,azure,6.2,2026-03-23T20:57:57.154518
-NSG_SSH_OPEN,HIGH,/subscriptions/7f159a80-280a-4256-9894-b470e626e7c0/resourceGroups/nirikshak-rg/providers/Microsoft.Network/networkSecurityGroups/nirikshak-nsg,azure,6.3,2026-03-23T20:57:57.154518
-NSG_RDP_OPEN,HIGH,/subscriptions/7f159a80-280a-4256-9894-b470e626e7c0/resourceGroups/nirikshak-rg/providers/Microsoft.Network/networkSecurityGroups/nirikshak-nsg,azure,6.4,2026-03-23T20:57:57.154518
+scan_id,timestamp,risk_score,rule_id,severity,resource_id,provider,cis_reference,fix_suggestion,description,impact
+27ed1312-05ad-439e-bf16-ea3747cfef44,2026-03-24T21:23:49.905247,35,AWS-LOG-001,MEDIUM,cloudtrail-demo,aws,CIS AWS 3.1,,,
+27ed1312-05ad-439e-bf16-ea3747cfef44,2026-03-24T21:23:49.905247,35,COMPUTE-001,HIGH,ec2_instance-demo,aws,CIS 3.2,,,
+27ed1312-05ad-439e-bf16-ea3747cfef44,2026-03-24T21:23:49.905247,35,COMPUTE-002,MEDIUM,ec2_instance-demo,aws,CIS 3.3,,,
+27ed1312-05ad-439e-bf16-ea3747cfef44,2026-03-24T21:23:49.905247,35,AWS-IAM-001,HIGH,iam_user-demo,aws,CIS AWS 1.2,,,
+27ed1312-05ad-439e-bf16-ea3747cfef44,2026-03-24T21:23:49.905247,35,IDENTITY-002,HIGH,iam_user-demo,aws,CIS AWS 1.2,,,
+27ed1312-05ad-439e-bf16-ea3747cfef44,2026-03-24T21:23:49.905247,35,AWS-S3-001,HIGH,public-bucket,aws,CIS AWS 2.1.1,,,
+27ed1312-05ad-439e-bf16-ea3747cfef44,2026-03-24T21:23:49.905247,35,AWS-S3-002,MEDIUM,public-bucket,aws,CIS AWS 2.1.2,,,
+27ed1312-05ad-439e-bf16-ea3747cfef44,2026-03-24T21:23:49.905247,35,NETWORK-001,CRITICAL,sg-123,aws,CIS 4.1,,,
+27ed1312-05ad-439e-bf16-ea3747cfef44,2026-03-24T21:23:49.905247,35,NETWORK-002,CRITICAL,sg-123,aws,CIS 4.1,,,
+27ed1312-05ad-439e-bf16-ea3747cfef44,2026-03-24T21:23:49.905247,35,AWS-EC2-001,CRITICAL,sg-123,aws,CIS AWS 4.1,,,

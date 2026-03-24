@@ -94,6 +94,10 @@ def _compute_facts(resource: Resource) -> Dict[str, Any]:
         facts["public_access"] = cfg.get("public_access", False)
         facts["public_access_enabled"] = cfg.get("public_access", False)
         facts["allow_blob_public_access"] = cfg.get("public_access", False)
+        facts["public_write"] = cfg.get("public_write", False)
+        facts["firewall_enabled"] = cfg.get("firewall_enabled", True)
+        facts["min_tls_version"] = cfg.get("min_tls_version", 1.2)
+        facts["secure_transfer"] = cfg.get("secure_transfer", True)
         
         facts["encryption_enabled"] = cfg.get("encryption", cfg.get("encryption_enabled"))
         facts["versioning_enabled"] = cfg.get("versioning_enabled")
@@ -104,6 +108,8 @@ def _compute_facts(resource: Resource) -> Dict[str, Any]:
         facts["open_ssh"] = False
         facts["open_rdp"] = False
         facts["open_to_world"] = False
+        facts["open_all_ports"] = False
+        facts["wide_cidr"] = False
 
         for perm in inbound_rules:
             if isinstance(perm, dict):
@@ -136,6 +142,16 @@ def _compute_facts(resource: Resource) -> Dict[str, Any]:
                             facts["open_ssh"] = True
                         if 3389 in ports or "*" in ports:
                             facts["open_rdp"] = True
+                    elif isinstance(source, str) and "/" in source:
+                        try:
+                            cidr_val = int(source.split("/")[1])
+                            if cidr_val < 24:
+                                facts["wide_cidr"] = True
+                        except ValueError:
+                            pass
+                    
+                    if "*" in ports or "Any" in ports or "any" in ports:
+                        facts["open_all_ports"] = True
                     
             # Simplified check - if any source is world-open
             if isinstance(perm, dict):
@@ -152,6 +168,7 @@ def _compute_facts(resource: Resource) -> Dict[str, Any]:
         facts["disk_encrypted"] = cfg.get("disk_encrypted")
         facts["encryption_enabled"] = cfg.get("encryption_enabled")
         facts["ebs_encrypted"] = cfg.get("ebs_encrypted")
+        facts["exposed_via_nsg"] = cfg.get("exposed_via_nsg", False)
 
     # Identity
     if resource.resource_type in {"iam_user", "azure_ad_user", "gcp_iam_user"}:
@@ -207,6 +224,9 @@ def run_engine(resources: List[Resource], rules: List[Dict[str, Any]]) -> List[D
                         "provider": resource.provider,
                         "details": f"Rule '{rule.get('id')}' matched for resource '{resource.resource_id}'",
                         "timestamp": now,
+                        "fix_suggestion": rule.get("fix_suggestion", ""),
+                        "description": rule.get("description", ""),
+                        "impact": rule.get("impact", ""),
                     }
                 )
 

@@ -19,38 +19,10 @@ def collect_gcp_resources(region: Optional[str] = None, mode: str = "demo") -> L
     Currently only demo mode is supported. This function can be extended to use
     google-cloud SDKs for real scans.
     """
-
-    resources: List[Resource] = []
-
+    from utils.helpers import load_demo_data
+    
     if mode != "demo":
         # Real GCP scanning not yet implemented.
-        return resources
+        return []
 
-    resources.append(
-        Resource(
-            resource_type="gcs_bucket",
-            resource_id="demo-gcs-bucket",
-            region=region or "global",
-            provider="gcp",
-            config={
-                "public_access_block": {"BlockPublicAcls": False},
-                "encryption_enabled": False,
-                "versioning_enabled": False,
-            },
-        )
-    )
-
-    resources.append(
-        Resource(
-            resource_type="compute_instance",
-            resource_id="demo-vm",
-            region=region or "global",
-            provider="gcp",
-            config={
-                "public_ip_address": "35.35.35.35",
-                "disk_encrypted": False,
-            },
-        )
-    )
-
-    return resources
+    return load_demo_data("gcp")

@@ -48,10 +48,5 @@ def collect_aws_resources(
             )
 
     # Demo mode or fallback
-    resources: List[Resource] = []
-    resources.extend(collect_s3_buckets(region, profile, "demo"))
-    resources.extend(collect_security_groups(region, profile, "demo"))
-    resources.extend(collect_ec2_instances(region, profile, "demo"))
-    resources.extend(collect_iam_users(region, profile, "demo"))
-    resources.extend(collect_cloudtrail_trails(region, profile, "demo"))
-    return resources
+    from utils.helpers import load_demo_data
+    return load_demo_data("aws")

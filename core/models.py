@@ -38,6 +38,9 @@ class Finding:
     cis_reference: str
     timestamp: str
     details: str
+    fix_suggestion: str = ""
+    description: str = ""
+    impact: str = ""
 
 
 @dataclass
