@@ -1,66 +1,94 @@
-# Azure Storage Account Security Rules
-
 - id: STORAGE_PUBLIC
   title: Storage Account Public Access Enabled
   resource_type: storage_account
   severity: CRITICAL
-  cis_reference: "3.6"
-  check: "public_access == true"
-  description: |
-    Blob public access is enabled on the storage account.
-    This allows unauthenticated users to read blob data.
-  impact: "Data Exfiltration"
-  fix_suggestion: "Disable public access on the storage account settings."
+  cis_reference: '3.6'
+  check: public_access == true
+  description: 'Blob public access is enabled on the storage account.
 
+    This allows unauthenticated users to read blob data.
+
+    '
+  impact: Data Exfiltration
+  fix_suggestion: Disable public access on the storage account settings.
+  compliance:
+  - framework: CIS
+    control_id: '3.6'
+  - framework: NIST
+    control_id: AC-3
 - id: STORAGE_PUBLIC_WRITE
   title: Storage Account Public Write Enabled
   resource_type: storage_account
   severity: CRITICAL
-  cis_reference: "3.6.1"
-  check: "public_write == true"
-  description: |
-    Storage account allows anonymous public write access.
-  impact: "Data Tampering / Ransomware"
-  fix_suggestion: "Remove public write permissions from container ACLs."
+  cis_reference: 3.6.1
+  check: public_write == true
+  description: 'Storage account allows anonymous public write access.
 
+    '
+  impact: Data Tampering / Ransomware
+  fix_suggestion: Remove public write permissions from container ACLs.
+  compliance:
+  - framework: CIS
+    control_id: 3.6.1
+  - framework: NIST
+    control_id: AC-3
 - id: STORAGE_NO_ENCRYPTION
   title: Storage Account Encryption Not Enabled
   resource_type: storage_account
   severity: HIGH
-  cis_reference: "3.7"
-  check: "encryption == false"
-  description: |
-    Encryption is not enabled on the storage account.
-    Data at rest should be encrypted using Azure Storage Service Encryption.
-  impact: "Data Exposure"
-  fix_suggestion: "Enable Storage Service Encryption for data at rest."
+  cis_reference: '3.7'
+  check: encryption == false
+  description: 'Encryption is not enabled on the storage account.
 
+    Data at rest should be encrypted using Azure Storage Service Encryption.
+
+    '
+  impact: Data Exposure
+  fix_suggestion: Enable Storage Service Encryption for data at rest.
+  compliance:
+  - framework: CIS
+    control_id: '3.7'
+  - framework: NIST
+    control_id: AC-3
 - id: STORAGE_MISSING_FIREWALL
   title: Storage Account Missing Firewall Rules
   resource_type: storage_account
   severity: MEDIUM
-  cis_reference: "3.8"
-  check: "firewall_enabled == false"
-  description: "Storage account is not protected by a virtual network firewall."
-  impact: "Network Exposure"
-  fix_suggestion: "Configure network rules to restrict access to specific virtual networks."
-
+  cis_reference: '3.8'
+  check: firewall_enabled == false
+  description: Storage account is not protected by a virtual network firewall.
+  impact: Network Exposure
+  fix_suggestion: Configure network rules to restrict access to specific virtual networks.
+  compliance:
+  - framework: CIS
+    control_id: '3.8'
+  - framework: NIST
+    control_id: AC-3
 - id: STORAGE_WEAK_TLS
   title: Weak TLS Version Used
   resource_type: storage_account
   severity: MEDIUM
-  cis_reference: "3.9"
-  check: "min_tls_version == 1.0"
-  description: "Storage account accepts TLS versions older than 1.2."
-  impact: "Man-in-the-Middle Attacks"
-  fix_suggestion: "Enforce minimum TLS version to 1.2."
-
+  cis_reference: '3.9'
+  check: min_tls_version == 1.0
+  description: Storage account accepts TLS versions older than 1.2.
+  impact: Man-in-the-Middle Attacks
+  fix_suggestion: Enforce minimum TLS version to 1.2.
+  compliance:
+  - framework: CIS
+    control_id: '3.9'
+  - framework: NIST
+    control_id: AC-3
 - id: STORAGE_SECURE_TRANSFER_DISABLED
   title: Secure Transfer Required Disabled
   resource_type: storage_account
   severity: HIGH
-  cis_reference: "3.10"
-  check: "secure_transfer == false"
-  description: "Storage account does not enforce HTTPS for incoming requests."
-  impact: "Data Sniffing"
-  fix_suggestion: "Enable 'Secure transfer required' in configuration."
+  cis_reference: '3.10'
+  check: secure_transfer == false
+  description: Storage account does not enforce HTTPS for incoming requests.
+  impact: Data Sniffing
+  fix_suggestion: Enable 'Secure transfer required' in configuration.
+  compliance:
+  - framework: CIS
+    control_id: '3.10'
+  - framework: NIST
+    control_id: AC-3

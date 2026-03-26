@@ -40,5 +40,3 @@ def generate_json_report(scan_result: ScanResult, output_path: str = "nirikshak_
 
     output_file = Path(output_path)
     output_file.write_text(json.dumps(report, indent=4))
-
-    print(f"JSON report generated: {output_file}")

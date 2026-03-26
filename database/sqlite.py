@@ -35,6 +35,16 @@ def init_db(db_path: str = DEFAULT_DB_PATH) -> None:
             findings JSON NOT NULL
         )"""
     )
+    
+    try:
+        cursor.execute("ALTER TABLE scans ADD COLUMN compliance JSON")
+    except sqlite3.OperationalError:
+        pass
+        
+    try:
+        cursor.execute("ALTER TABLE scans ADD COLUMN metrics JSON")
+    except sqlite3.OperationalError:
+        pass
 
     cursor.execute(
         """CREATE TABLE IF NOT EXISTS findings (
@@ -75,11 +85,12 @@ def save_scan_result(scan_result: ScanResult, db_path: str = DEFAULT_DB_PATH) ->
             "severity": f.severity,
             "description": f.description,
             "impact": f.impact,
-            "fix_suggestion": f.fix_suggestion
+            "fix_suggestion": f.fix_suggestion,
+            "compliance": f.compliance
         })
 
     cursor.execute(
-        "INSERT OR REPLACE INTO scans (scan_id, provider, mode, timestamp, risk_score, findings) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT OR REPLACE INTO scans (scan_id, provider, mode, timestamp, risk_score, findings, compliance, metrics) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         (
             scan_result.scan_id,
             scan_result.provider,
@@ -87,6 +98,8 @@ def save_scan_result(scan_result: ScanResult, db_path: str = DEFAULT_DB_PATH) ->
             scan_result.timestamp,
             scan_result.risk_score,
             json.dumps(findings_json),
+            json.dumps(scan_result.compliance),
+            json.dumps(scan_result.metrics)
         ),
     )
 
@@ -142,8 +155,11 @@ def get_scan(scan_id: str, db_path: str = DEFAULT_DB_PATH) -> Optional[ScanResul
                 cis_reference=fr["cis_reference"],
                 timestamp=fr["timestamp"],
                 details=fr["details"],
+                compliance=[]
             )
         )
+        
+    row_keys = row.keys()
 
     scan = ScanResult(
         scan_id=row["scan_id"],
@@ -154,6 +170,8 @@ def get_scan(scan_id: str, db_path: str = DEFAULT_DB_PATH) -> Optional[ScanResul
         findings=findings,
         severity_count={}, # Fallback since we dropped summary column
         risk_score=row["risk_score"],
+        compliance=json.loads(row["compliance"] or "{}") if "compliance" in row_keys else {},
+        metrics=json.loads(row["metrics"] or "{}") if "metrics" in row_keys else {}
     )
 
     conn.close()
@@ -169,11 +187,15 @@ def get_scans(db_path: str = DEFAULT_DB_PATH) -> List[Dict[str, Any]]:
     
     scans = []
     for row in rows:
+        row_keys = row.keys()
         scans.append({
             "scan_id": row["scan_id"],
+            "provider": row["provider"],
             "timestamp": row["timestamp"],
             "risk_score": row["risk_score"],
             "findings": json.loads(row["findings"] or "[]"),
+            "compliance": json.loads(row["compliance"] or "{}") if "compliance" in row_keys and row["compliance"] else {},
+            "metrics": json.loads(row["metrics"] or "{}") if "metrics" in row_keys and row["metrics"] else {}
         })
     conn.close()
     return scans

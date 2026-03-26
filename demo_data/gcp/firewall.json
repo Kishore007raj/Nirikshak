@@ -1,0 +1,24 @@
+[
+  {
+    "id": "gcp-fw-allow-ssh",
+    "name": "default-allow-ssh",
+    "direction": "INGRESS",
+    "inbound_rules": [
+      {
+        "port": 22,
+        "source": "0.0.0.0/0"
+      }
+    ]
+  },
+  {
+    "id": "gcp-fw-allow-rdp",
+    "name": "default-allow-rdp",
+    "direction": "INGRESS",
+    "inbound_rules": [
+      {
+        "port": 3389,
+        "source": "0.0.0.0/0"
+      }
+    ]
+  }
+]

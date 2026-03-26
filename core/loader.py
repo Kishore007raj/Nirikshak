@@ -77,5 +77,5 @@ def load_rules(rules_path: Union[str, Path] = RULES_DIR) -> List[Dict[str, Any]]
 
             rules.append(rule)
 
-    logger.info("Loaded %s rules from %s", len(rules), rules_path_obj)
+    logger.debug("Loaded %s rules from %s", len(rules), rules_path_obj)
     return rules

@@ -45,5 +45,3 @@ def generate_csv_report(scan_result: ScanResult, output_path: str = "nirikshak_r
                 finding.description,
                 finding.impact
             ])
-
-    print(f"CSV report generated: {output_file}")

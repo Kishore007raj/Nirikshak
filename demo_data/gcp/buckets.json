@@ -1,0 +1,18 @@
+[
+  {
+    "id": "gcs-public-demo-bucket",
+    "name": "public-demo-bucket",
+    "public_access": true,
+    "encryption_enabled": false,
+    "versioning_enabled": false,
+    "location": "us-central1"
+  },
+  {
+    "id": "gcs-internal-bucket",
+    "name": "internal-data-bucket",
+    "public_access": false,
+    "encryption_enabled": true,
+    "versioning_enabled": false,
+    "location": "us-central1"
+  }
+]

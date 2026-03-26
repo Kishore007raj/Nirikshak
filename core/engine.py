@@ -11,6 +11,7 @@ from typing import Any, Callable, Dict, List, Optional
 
 from .models import Resource
 from .severity import normalize_severity
+from utils.time import get_ist_time
 
 
 def _resolve_nested_key(data: Dict[str, Any], key_path: str) -> Any:
@@ -186,7 +187,7 @@ def run_engine(resources: List[Resource], rules: List[Dict[str, Any]]) -> List[D
     """Run the rule engine for a list of normalized resources."""
 
     findings: List[Dict[str, Any]] = []
-    now = datetime.utcnow().isoformat()
+    now = get_ist_time()
 
     for resource in resources:
         facts = _compute_facts(resource)
@@ -227,6 +228,7 @@ def run_engine(resources: List[Resource], rules: List[Dict[str, Any]]) -> List[D
                         "fix_suggestion": rule.get("fix_suggestion", ""),
                         "description": rule.get("description", ""),
                         "impact": rule.get("impact", ""),
+                        "compliance": rule.get("compliance", []),
                     }
                 )
 

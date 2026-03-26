@@ -4,10 +4,19 @@
   cis: CIS AWS 1.1
   resource: iam_user
   condition: is_admin == true
-
+  compliance:
+  - framework: CIS
+    control_id: CIS AWS 1.1
+  - framework: NIST
+    control_id: AC-3
 - id: IDENTITY-002
   title: IAM user missing MFA
   severity: HIGH
   cis: CIS AWS 1.2
   resource: iam_user
   condition: mfa_enabled == false
+  compliance:
+  - framework: CIS
+    control_id: CIS AWS 1.2
+  - framework: NIST
+    control_id: AC-3

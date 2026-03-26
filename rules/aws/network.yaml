@@ -4,17 +4,30 @@
   cis: CIS 4.1
   resource: security_group
   condition: open_to_world == true
-
+  compliance:
+  - framework: CIS
+    control_id: CIS 4.1
+  - framework: NIST
+    control_id: AC-3
 - id: NETWORK-002
   title: SSH port open to world
   severity: CRITICAL
   cis: CIS 4.1
   resource: security_group
   condition: open_ssh == true
-
+  compliance:
+  - framework: CIS
+    control_id: CIS 4.1
+  - framework: NIST
+    control_id: AC-3
 - id: NETWORK-003
   title: RDP port open to world
   severity: HIGH
   cis: CIS 4.1
   resource: security_group
   condition: open_rdp == true
+  compliance:
+  - framework: CIS
+    control_id: CIS 4.1
+  - framework: NIST
+    control_id: AC-3

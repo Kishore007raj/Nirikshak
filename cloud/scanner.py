@@ -28,15 +28,15 @@ def collect_resources(provider: str, mode: str = "demo", **kwargs: Any) -> List[
         from azure.adapter import collect_azure_resources
 
         if mode == "real":
-            logger.info("Collecting live Azure resources")
+            logger.debug("Collecting live Azure resources")
         else:
-            logger.info("Using Azure demo resources")
+            logger.debug("Using Azure demo resources")
         return collect_azure_resources(mode=mode)
 
     if provider == "gcp":
         from gcp.adapter import collect_gcp_resources
 
-        logger.info("Using GCP demo resources")
+        logger.debug("Using GCP demo resources")
         return collect_gcp_resources(mode=mode)
 
     raise ValueError(f"Unsupported provider: {provider}")

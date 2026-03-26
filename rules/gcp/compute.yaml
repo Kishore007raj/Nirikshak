@@ -1,0 +1,27 @@
+- id: GCP-VM-001
+  title: GCP Compute Instance Has Public IP
+  severity: HIGH
+  cis: CIS GCP 4.9
+  resource: compute_instance
+  condition: has_public_ip == true
+  fix_suggestion: Remove public IP from the instance and use Cloud NAT for egress.
+  description: Compute instance is directly reachable via a public IP address.
+  compliance:
+  - framework: CIS
+    control_id: CIS GCP 4.9
+  - framework: NIST
+    control_id: AC-3
+- id: GCP-VM-002
+  title: GCP Compute Instance Disk Unencrypted
+  severity: MEDIUM
+  cis: CIS GCP 4.7
+  resource: compute_instance
+  condition: disk_encrypted == false
+  fix_suggestion: Enable customer-managed encryption for compute disks.
+  description: Compute instance boot or data disk is not encrypted with a customer-managed
+    key.
+  compliance:
+  - framework: CIS
+    control_id: CIS GCP 4.7
+  - framework: NIST
+    control_id: AC-3

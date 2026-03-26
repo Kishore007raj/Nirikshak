@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIRIKSHAK - Cloud Security Posture Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="glass-header">
+            <div class="header-left">
+                <h1>NIRIKSHAK</h1>
+                <p class="subtitle">Cloud Security Posture Dashboard</p>
+            </div>
+            <div class="header-right">
+                <div class="control-group">
+                    <label for="cloud-provider">Cloud Provider</label>
+                    <select id="cloud-provider" class="glass-select">
+                        <option value="aws">AWS</option>
+                        <option value="azure">Azure</option>
+                        <option value="gcp">GCP</option>
+                        <option value="terraform">Terraform</option>
+                    </select>
+                </div>
+                <button id="btn-scan" class="primary-btn">
+                    <span class="btn-text">Run Scan</span>
+                    <span class="spinner hidden"></span>
+                </button>
+                <button id="downloadReport" class="secondary-btn hidden" style="margin-left: 10px;">
+                    Download PDF
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="dashboard-grid">
+            
+            <div id="initial-state" style="grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; min-height: 400px; color: #94a3b8;">
+                <h2>Run a scan to view security posture</h2>
+            </div>
+
+            <!-- Left Column: Risk Score & Severity -->
+            <div class="left-col hidden" id="dashboard-left">
+                <!-- Risk Score Card -->
+                <div class="card risk-card glass-panel flex-col-center">
+                    <h2>Risk Score</h2>
+                    <div class="score-display">
+                        <svg class="progress-ring" width="200" height="200">
+                            <circle class="progress-ring__circle" stroke-width="12" fill="transparent" r="80" cx="100" cy="100"/>
+                        </svg>
+                        <div class="score-value" id="risk-score">--</div>
+                    </div>
+                    <p id="risk-status" class="status-label">Awaiting Data</p>
+                </div>
+
+                <!-- Compliance Score Card -->
+                <div class="card risk-card glass-panel flex-col-center">
+                    <h2>Compliance Score</h2>
+                    <div class="score-display">
+                        <svg class="progress-ring" width="200" height="200">
+                            <circle class="progress-ring__circle" id="compliance-circle" stroke-width="12" fill="transparent" r="80" cx="100" cy="100"/>
+                        </svg>
+                        <div class="score-value" id="compliance-score">--</div>
+                    </div>
+                    <p id="compliance-status" class="status-label">Awaiting Data</p>
+                </div>
+                
+                <!-- KPI Metrics Card -->
+                <div class="card glass-panel flex-col-center" style="padding: 1.5rem;">
+                    <h2 style="margin-bottom: 1rem;">KPI Metrics</h2>
+                    <div style="display: flex; justify-content: space-between; width: 100%; gap: 10px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 0.8rem; color: #94a3b8;">Scan Time</div>
+                            <div id="kpi-scan-time" style="font-size: 1.2rem; font-weight: bold; color: white;">--</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 0.8rem; color: #94a3b8;">Res/Sec</div>
+                            <div id="kpi-rps" style="font-size: 1.2rem; font-weight: bold; color: white;">--</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 0.8rem; color: #94a3b8;">Density</div>
+                            <div id="kpi-density" style="font-size: 1.2rem; font-weight: bold; color: white;">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Severity Breakdown -->
+                <div class="card severity-card glass-panel">
+                    <h2>Severity Breakdown</h2>
+                    <div class="severity-chart-container" id="severity-chart">
+                        <div class="empty-state">No data available</div>
+                    </div>
+                </div>
+                
+                <!-- Scan History -->
+                <div class="card history-card glass-panel">
+                    <h2>Scan History</h2>
+                    <ul id="history-list" class="history-list">
+                        <div class="empty-state">No history available</div>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Right Column: Findings Table -->
+            <div class="right-col hidden" id="dashboard-right">
+                <div class="card findings-card glass-panel">
+                    <div class="card-header">
+                        <h2>Findings</h2>
+                        <span id="scan-timestamp" class="timestamp-label"></span>
+                    </div>
+                    <div class="table-container">
+                        <table class="findings-table">
+                            <thead>
+                                <tr>
+                                    <th>Resource</th>
+                                    <th>Type</th>
+                                    <th>Severity</th>
+                                    <th>Description</th>
+                                    <th>Impact</th>
+                                    <th>Fix Suggestion</th>
+                                </tr>
+                            </thead>
+                            <tbody id="findings-body">
+                                <tr>
+                                    <td colspan="6" class="empty-state" style="text-align:center; padding: 3rem;">No findings available</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Notifications Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="main.js"></script>
+</body>
+</html>

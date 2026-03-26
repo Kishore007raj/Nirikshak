@@ -1,0 +1,40 @@
+- id: GCP-NET-001
+  title: GCP Firewall Allows SSH from Anywhere
+  severity: CRITICAL
+  cis: CIS GCP 3.6
+  resource: firewall
+  condition: open_ssh == true
+  fix_suggestion: Restrict SSH (port 22) to specific trusted IP ranges instead of
+    0.0.0.0/0.
+  description: Firewall rule allows SSH access from the entire internet (0.0.0.0/0).
+  compliance:
+  - framework: CIS
+    control_id: CIS GCP 3.6
+  - framework: NIST
+    control_id: AC-3
+- id: GCP-NET-002
+  title: GCP Firewall Open to World
+  severity: HIGH
+  cis: CIS GCP 3.7
+  resource: firewall
+  condition: open_to_world == true
+  fix_suggestion: Restrict inbound rules to specific CIDR blocks.
+  description: Firewall rule allows inbound traffic from any source IP.
+  compliance:
+  - framework: CIS
+    control_id: CIS GCP 3.7
+  - framework: NIST
+    control_id: AC-3
+- id: GCP-NET-003
+  title: GCP Firewall Allows RDP from Anywhere
+  severity: HIGH
+  cis: CIS GCP 3.8
+  resource: firewall
+  condition: open_rdp == true
+  fix_suggestion: Restrict RDP (port 3389) to specific trusted IP ranges.
+  description: Firewall rule allows RDP access from the entire internet (0.0.0.0/0).
+  compliance:
+  - framework: CIS
+    control_id: CIS GCP 3.8
+  - framework: NIST
+    control_id: AC-3

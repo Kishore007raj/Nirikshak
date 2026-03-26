@@ -4,10 +4,19 @@
   cis: CIS 3.2
   resource: ec2_instance
   condition: has_public_ip == true
-
+  compliance:
+  - framework: CIS
+    control_id: CIS 3.2
+  - framework: NIST
+    control_id: AC-3
 - id: COMPUTE-002
   title: Compute instance disk encryption disabled
   severity: MEDIUM
   cis: CIS 3.3
   resource: ec2_instance
   condition: disk_encrypted == false
+  compliance:
+  - framework: CIS
+    control_id: CIS 3.3
+  - framework: NIST
+    control_id: AC-3

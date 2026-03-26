@@ -41,6 +41,7 @@ class Finding:
     fix_suggestion: str = ""
     description: str = ""
     impact: str = ""
+    compliance: List[Dict[str, str]] = field(default_factory=list)
 
 
 @dataclass
@@ -53,3 +54,5 @@ class ScanResult:
     findings: List[Finding] = field(default_factory=list)
     severity_count: Dict[str, int] = field(default_factory=dict)
     risk_score: int = 0
+    compliance: Dict[str, Any] = field(default_factory=dict)
+    metrics: Dict[str, Any] = field(default_factory=dict)

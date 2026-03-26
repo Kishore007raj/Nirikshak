@@ -1,0 +1,33 @@
+- id: GCP-STG-001
+  title: GCS Bucket Publicly Accessible
+  severity: CRITICAL
+  cis: CIS GCP 5.1
+  resource: gcs_bucket
+  condition: public_access == true
+  compliance:
+  - framework: CIS
+    control_id: CIS GCP 5.1
+  - framework: NIST
+    control_id: AC-3
+- id: GCP-STG-002
+  title: GCS Bucket Encryption Disabled
+  severity: HIGH
+  cis: CIS GCP 5.2
+  resource: gcs_bucket
+  condition: encryption_enabled == false
+  compliance:
+  - framework: CIS
+    control_id: CIS GCP 5.2
+  - framework: NIST
+    control_id: AC-3
+- id: GCP-STG-003
+  title: GCS Bucket Versioning Disabled
+  severity: LOW
+  cis: CIS GCP 5.3
+  resource: gcs_bucket
+  condition: versioning_enabled == false
+  compliance:
+  - framework: CIS
+    control_id: CIS GCP 5.3
+  - framework: NIST
+    control_id: AC-3

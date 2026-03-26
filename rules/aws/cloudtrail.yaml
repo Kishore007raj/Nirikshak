@@ -1,8 +1,11 @@
-#cloudtrail rules should ensure that the cloudtrail is enabled in all regions to ensure that all the activities in the aws account are logged and monitored for any suspicious activities.
-
 - id: AWS-LOG-001
   title: CloudTrail Not Multi-Region
   severity: MEDIUM
   cis: CIS AWS 3.1
   resource: cloudtrail
   condition: is_multi_region == false
+  compliance:
+  - framework: CIS
+    control_id: CIS AWS 3.1
+  - framework: NIST
+    control_id: AC-3
