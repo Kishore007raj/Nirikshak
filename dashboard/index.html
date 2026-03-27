@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NIRIKSHAK - Cloud Security Posture Dashboard</title>
+    <meta name="description" content="NIRIKSHAK Cloud Security Posture Management Dashboard - Real-time multi-cloud security scanning for AWS, Azure, GCP, and Terraform.">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -12,7 +13,7 @@
         <!-- Header -->
         <header class="glass-header">
             <div class="header-left">
-                <h1>NIRIKSHAK</h1>
+                <h1>NIRIKSHAK <span id="providerBadge" class="badge"></span></h1>
                 <p class="subtitle">Cloud Security Posture Dashboard</p>
             </div>
             <div class="header-right">
@@ -108,8 +109,11 @@
             <div class="right-col hidden" id="dashboard-right">
                 <div class="card findings-card glass-panel">
                     <div class="card-header">
-                        <h2>Findings</h2>
-                        <span id="scan-timestamp" class="timestamp-label"></span>
+                        <div id="summaryText" class="summary-text"></div>
+                        <div class="card-header-row">
+                            <h2>Findings</h2>
+                            <span id="scan-timestamp" class="timestamp-label"></span>
+                        </div>
                     </div>
                     <div class="table-container">
                         <table class="findings-table">
@@ -121,11 +125,12 @@
                                     <th>Description</th>
                                     <th>Impact</th>
                                     <th>Fix Suggestion</th>
+                                    <th>Compliance</th>
                                 </tr>
                             </thead>
                             <tbody id="findings-body">
                                 <tr>
-                                    <td colspan="6" class="empty-state" style="text-align:center; padding: 3rem;">No findings available</td>
+                                    <td colspan="8" class="empty-state" style="text-align:center; padding: 3rem;">No findings available</td>
                                 </tr>
                             </tbody>
                         </table>

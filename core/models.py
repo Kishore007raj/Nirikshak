@@ -1,19 +1,19 @@
 """
-Rule loader.
+Data models for Nirikshak.
 
-Parses YAML rule files and converts them
-into executable rule objects.
+Defines the core Resource, Finding, and ScanResult classes 
+used across the entire pipeline.
 """
 
-#this models file inside the core directory is used to define the data models for the application and it will contain all the classes and functions related to the data models of the application and in the future we will add more classes and functions related to the data models as we progress with the development of the application.
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-# Data models used across the Nirikshak pipeline.
-# The Resource model represents a normalized cloud resource that can be evaluated by the rule engine.
+
 @dataclass
 class Resource:
+    """Represents a normalized cloud resource."""
     resource_type: str
     resource_id: str
     region: str
@@ -28,6 +28,7 @@ class Resource:
 
 @dataclass
 class Finding:
+    """Represents a single security violation detected by the engine."""
     rule_id: str
     title: str
     severity: str
@@ -35,17 +36,21 @@ class Finding:
     resource_id: str
     resource_type: str
     region: str
-    cis_reference: str
     timestamp: str
-    details: str
-    fix_suggestion: str = ""
     description: str = ""
     impact: str = ""
+    fix_suggestion: str = ""
     compliance: List[Dict[str, str]] = field(default_factory=list)
+    cis_reference: str = ""
+    details: str = ""
+    # Metadata for risk scoring
+    exposed_to_internet: bool = False
+    sensitive_data: bool = False
 
 
 @dataclass
 class ScanResult:
+    """Represents the complete result of a security scan."""
     scan_id: str
     provider: str
     mode: str

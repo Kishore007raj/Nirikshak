@@ -4,6 +4,9 @@
   cis: CIS 4.1
   resource: security_group
   condition: open_to_world == true
+  description: Security group has inbound rules allowing traffic from 0.0.0.0/0, permitting unrestricted access from any IP address on the internet.
+  impact: All associated resources are directly reachable from the internet, enabling reconnaissance, brute-force attacks, and exploitation of exposed services.
+  fix_suggestion: Restrict inbound rules to specific trusted CIDR blocks or security group references instead of allowing 0.0.0.0/0.
   compliance:
   - framework: CIS
     control_id: CIS 4.1
@@ -15,6 +18,9 @@
   cis: CIS 4.1
   resource: security_group
   condition: open_ssh == true
+  description: Security group allows inbound SSH (port 22) from 0.0.0.0/0, exposing the SSH service to the entire internet.
+  impact: Attackers can attempt brute-force or credential-stuffing attacks against SSH, potentially gaining full shell access to the instance.
+  fix_suggestion: Restrict SSH access to a bastion host or specific trusted IP ranges. Consider using AWS Systems Manager Session Manager as a zero-port alternative.
   compliance:
   - framework: CIS
     control_id: CIS 4.1
@@ -26,6 +32,9 @@
   cis: CIS 4.1
   resource: security_group
   condition: open_rdp == true
+  description: Security group allows inbound RDP (port 3389) from 0.0.0.0/0, exposing Remote Desktop to the entire internet.
+  impact: RDP is a primary attack vector for ransomware deployment and unauthorized access to Windows servers.
+  fix_suggestion: Restrict RDP access to specific trusted IP ranges and enforce Network Level Authentication (NLA) on target instances.
   compliance:
   - framework: CIS
     control_id: CIS 4.1

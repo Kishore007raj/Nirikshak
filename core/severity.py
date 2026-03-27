@@ -5,7 +5,8 @@ Defines severity levels and risk scoring logic
 for detected misconfigurations.
 """
 
-from typing import Dict, List
+from __future__ import annotations
+from typing import Dict, List, Any
 
 SEVERITY_WEIGHTS: Dict[str, int] = {
     "CRITICAL": 10,
@@ -24,49 +25,52 @@ def normalize_severity(severity: str) -> str:
     return key if key in SEVERITY_WEIGHTS else "LOW"
 
 
-def calculate_risk_score(findings: List[Dict]) -> int:
-    """Calculate a risk score from a list of findings."""
+def calculate_risk_score(findings: List[Dict[str, Any]]) -> int:
+    """Calculate a risk score from a list of findings.
+
+    Incorporates context boosts for internet exposure and sensitive data.
+    """
 
     score = 0
     seen_resources = set()
 
     for finding in findings:
-        sev = normalize_severity(finding.get("severity"))
+        sev = normalize_severity(finding.get("severity", ""))
         base = SEVERITY_WEIGHTS.get(sev, 0)
 
-        # Context: internet exposure boost
+        # Context: internet exposure boost (2x)
         if finding.get("exposed_to_internet"):
             base *= 2
 
-        # Context: sensitive data boost
+        # Context: sensitive data boost (1.5x for storage/databases)
         if finding.get("sensitive_data"):
-            base *= 2
+            base = int(base * 1.5)
 
-        # Context: production asset boost
-        if finding.get("environment") == "prod":
-            base += 3
-
-        # Basic deduplication by resource
+        # Basic deduplication by resource to avoid skewed scores on single resources
         resource_id = finding.get("resource_id")
-        if resource_id in seen_resources:
+        if resource_id and resource_id in seen_resources:
+            # Add a smaller penalty for secondary findings on same resource
+            score += max(1, base // 4)
             continue
-        seen_resources.add(resource_id)
+            
+        if resource_id:
+            seen_resources.add(resource_id)
 
         score += base
 
-    # Cap score to avoid inflation
+    # Cap score at 100 for dashboard presentation
     return min(score, 100)
 
 
-def summarize_severity(findings: List[Dict]) -> Dict[str, int]:
-    """Count findings by severity."""
+def summarize_severity(findings: List[Dict[str, Any]]) -> Dict[str, int]:
+    """Count findings by severity, with context-aware severity bumping."""
 
     summary: Dict[str, int] = {k: 0 for k in SEVERITY_WEIGHTS.keys()}
 
     for finding in findings:
-        sev = normalize_severity(finding.get("severity"))
+        sev = normalize_severity(finding.get("severity", ""))
 
-        # Context-aware bump
+        # Context-aware bump: If high/medium is exposed to internet, bump it
         if finding.get("exposed_to_internet") and sev != "CRITICAL":
             if sev == "HIGH":
                 sev = "CRITICAL"

@@ -24,7 +24,9 @@ const elements = {
     initialState: document.getElementById('initial-state'),
     dashboardLeft: document.getElementById('dashboard-left'),
     dashboardRight: document.getElementById('dashboard-right'),
-    downloadReportBtn: document.getElementById('downloadReport')
+    downloadReportBtn: document.getElementById('downloadReport'),
+    summaryText: document.getElementById('summaryText'),
+    providerBadge: document.getElementById('providerBadge')
 };
 
 // Circle properties
@@ -118,12 +120,21 @@ function initWebSocket() {
     };
 }
 
-// Enable PDF Download
+// Enable PDF Download — triggers actual file download
 function enablePDF(scanId) {
     if (!scanId) return;
     elements.downloadReportBtn.classList.remove('hidden');
+    elements.downloadReportBtn.disabled = false;
     elements.downloadReportBtn.onclick = () => {
-        window.open(`${API_BASE}/report/${scanId}`, "_blank");
+        // Create a hidden anchor to trigger proper file download
+        const link = document.createElement('a');
+        link.href = `${API_BASE}/download/${scanId}`;
+        link.download = `nirikshak_report_${scanId}.pdf`;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast("Downloading PDF report...", "info");
     };
 }
 
@@ -132,7 +143,7 @@ function runScan() {
     if (isScanning) return;
     
     const provider = elements.providerSelect.value;
-    // Hide UI initial state, but keep columns hidden/loading state
+    // Hide UI initial state
     elements.initialState.classList.add('hidden');
     
     if (socket && socket.readyState === WebSocket.OPEN) {
@@ -163,7 +174,7 @@ function showLoading() {
     
     setProgress(0, '#94a3b8', elements.progressCircle);
     setProgress(0, '#94a3b8', elements.complianceCircle);
-    elements.findingsBody.innerHTML = '<tr><td colspan="6" class="empty-state" style="text-align:center; padding: 3rem;">Scanning resources...</td></tr>';
+    elements.findingsBody.innerHTML = '<tr><td colspan="8" class="empty-state" style="text-align:center; padding: 3rem;">Scanning resources...</td></tr>';
 }
 
 function stopLoading() {
@@ -175,7 +186,7 @@ function stopLoading() {
 
 function showError(msg) {
     showToast(msg, "error");
-    elements.findingsBody.innerHTML = `<tr><td colspan="6" class="empty-state" style="text-align:center; padding: 3rem; color:#ef4444;">Scan Error: ${escapeHtml(msg)}</td></tr>`;
+    elements.findingsBody.innerHTML = `<tr><td colspan="8" class="empty-state" style="text-align:center; padding: 3rem; color:#ef4444;">Scan Error: ${escapeHtml(msg)}</td></tr>`;
 }
 
 // Fetch scan history
@@ -211,18 +222,22 @@ function animateValue(obj, start, end, duration) {
 function renderDashboard(data) {
     if (!data) return;
     
-    // Risk Score
+    // Risk Score - EXACT match to backend SEVERITY_WEIGHTS + normalize_severity
     const score = data.risk_score || 0;
     
-    let color = '#22c55e'; // Green
+    let color = '#22c55e'; // Green (LOW)
     let statusText = 'Low Risk';
     
+    // Match backend: CRITICAL >= 70, MEDIUM >= 30, LOW < 30
     if (score >= 70) {
         color = '#ef4444'; // Red
         statusText = 'Critical Risk';
     } else if (score >= 30) {
         color = '#eab308'; // Yellow
         statusText = 'Moderate Risk';
+    } else if (score === 0 && (!data.findings || data.findings.length === 0)) {
+        color = '#22c55e';
+        statusText = 'Secure';
     }
     
     const scoreEl = elements.riskScore;
@@ -283,6 +298,55 @@ function renderDashboard(data) {
     
     // Findings Table
     updateFindingsTable(data.findings);
+
+    // Summary message and provider badge
+    renderSummary(data);
+    updateProviderBadge(data.provider);
+}
+
+function renderSummary(data) {
+    const critical = data.summary.critical || data.summary.CRITICAL || 0;
+    const high = data.summary.high || data.summary.HIGH || 0;
+    const medium = data.summary.medium || data.summary.MEDIUM || 0;
+    const total = critical + high + medium;
+    const hasFindings = data.findings && data.findings.length > 0;
+
+    let message = "";
+    let bgColor = "rgba(34, 197, 94, 0.1)";
+    let borderColor = "#22c55e";
+
+    if (!hasFindings) {
+        message = "No security misconfigurations detected. High posture maturity confirmed.";
+        bgColor = "rgba(34, 197, 94, 0.15)";
+        borderColor = "#22c55e";
+    } else if (critical > 0) {
+        message = `${critical} critical misconfiguration${critical > 1 ? 's' : ''} detected exposing resources to severe risk. Immediate remediation required.`;
+        bgColor = "rgba(239, 68, 68, 0.1)";
+        borderColor = "#ef4444";
+    } else if (high > 0) {
+        message = `${high} high-risk misconfiguration${high > 1 ? 's' : ''} detected. Review and remediate before production deployment.`;
+        bgColor = "rgba(249, 115, 22, 0.1)";
+        borderColor = "#f97316";
+    } else if (medium > 0) {
+        message = `${medium} medium-risk finding${medium > 1 ? 's' : ''} detected. Security posture is acceptable but can be improved.`;
+        bgColor = "rgba(234, 179, 8, 0.1)";
+        borderColor = "#eab308";
+    } else {
+        message = "Only low-risk findings detected. Overall status remains within acceptable security thresholds.";
+    }
+
+    elements.summaryText.innerText = message;
+    elements.summaryText.style.display = "block";
+    elements.summaryText.style.background = bgColor;
+    elements.summaryText.style.borderLeft = `4px solid ${borderColor}`;
+}
+
+function updateProviderBadge(provider) {
+    if (!provider) return;
+    const badge = elements.providerBadge;
+    badge.innerText = provider.toUpperCase();
+    badge.className = "badge";
+    badge.classList.add(provider.toLowerCase());
 }
 
 // Update severity chart
@@ -363,10 +427,10 @@ function updateHistory(historyList) {
 }
 
 
-// Update Findings Table
+// Update Findings Table — includes all 8 columns, no truncation on resource/severity
 function updateFindingsTable(findings) {
     if (!findings || findings.length === 0) {
-        elements.findingsBody.innerHTML = '<tr><td colspan="6" class="empty-state" style="text-align:center; padding: 3rem;">No findings available</td></tr>';
+        elements.findingsBody.innerHTML = '<tr><td colspan="8" class="empty-state" style="text-align:center; padding: 3rem;">No findings available</td></tr>';
         return;
     }
     
@@ -378,15 +442,23 @@ function updateFindingsTable(findings) {
     
     elements.findingsBody.innerHTML = sorted.map(f => {
         const sevLower = (f.severity || '').toLowerCase();
+        const resourceId = f.resource_id || 'N/A';
+        const resType = f.type || f.resource_type || 'unknown';
+        const severity = f.severity || 'LOW';
+        const description = f.description || 'No description available';
+        const impact = f.impact || 'No impact assessment available';
+        const fixSuggestion = f.fix_suggestion || 'No fix suggestion available';
+        const compliance = f.compliance || 'CIS Benchmark';
         
         return `
             <tr>
-                <td class="cell-resource">${escapeHtml(f.resource_id)}</td>
-                <td>${escapeHtml(f.type)}</td>
-                <td><span class="badge badge-${sevLower}">${escapeHtml(f.severity)}</span></td>
-                <td class="cell-desc">${escapeHtml(f.description)}</td>
-                <td class="cell-impact">${escapeHtml(f.impact || '-')}</td>
-                <td class="cell-fix">${escapeHtml(f.fix_suggestion || '-')}</td>
+                <td class="cell-resource">${escapeHtml(resourceId)}</td>
+                <td class="cell-type">${escapeHtml(resType)}</td>
+                <td class="cell-severity"><span class="badge badge-${sevLower}">${escapeHtml(severity)}</span></td>
+                <td class="cell-desc">${escapeHtml(description)}</td>
+                <td class="cell-impact">${escapeHtml(impact)}</td>
+                <td class="cell-fix">${escapeHtml(fixSuggestion)}</td>
+                <td class="cell-compliance">${escapeHtml(compliance)}</td>
             </tr>
         `;
     }).join('');
@@ -394,7 +466,7 @@ function updateFindingsTable(findings) {
 
 // Utility to escape HTML
 function escapeHtml(unsafe) {
-    if (typeof unsafe !== 'string') return unsafe;
+    if (typeof unsafe !== 'string') return String(unsafe);
     return unsafe
          .replace(/&/g, "&amp;")
          .replace(/</g, "&lt;")

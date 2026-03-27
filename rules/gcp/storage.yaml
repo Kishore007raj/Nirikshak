@@ -4,6 +4,9 @@
   cis: CIS GCP 5.1
   resource: gcs_bucket
   condition: public_access == true
+  description: GCS bucket has public access enabled via IAM policies or ACLs, allowing any user on the internet to list or read bucket objects.
+  impact: Sensitive data stored in the bucket may be exfiltrated by unauthorized parties, leading to data breaches and regulatory non-compliance.
+  fix_suggestion: Remove allUsers and allAuthenticatedUsers bindings from the bucket IAM policy. Enable Uniform Bucket-Level Access to prevent ACL-based public exposure.
   compliance:
   - framework: CIS
     control_id: CIS GCP 5.1
@@ -15,6 +18,9 @@
   cis: CIS GCP 5.2
   resource: gcs_bucket
   condition: encryption_enabled == false
+  description: GCS bucket does not use customer-managed encryption keys (CMEK), relying only on default Google-managed encryption.
+  impact: Without CMEK, the organization cannot control key rotation, revocation, or audit access to encryption keys, reducing control over data protection.
+  fix_suggestion: Configure a Cloud KMS key and apply it as the default encryption key on the GCS bucket.
   compliance:
   - framework: CIS
     control_id: CIS GCP 5.2
@@ -26,6 +32,9 @@
   cis: CIS GCP 5.3
   resource: gcs_bucket
   condition: versioning_enabled == false
+  description: Object versioning is not enabled on the GCS bucket, preventing recovery of overwritten or deleted objects.
+  impact: Accidental or malicious data deletion cannot be recovered from version history, increasing the risk of permanent data loss.
+  fix_suggestion: Enable object versioning on the bucket and configure lifecycle rules to automatically delete old versions after a retention period.
   compliance:
   - framework: CIS
     control_id: CIS GCP 5.3

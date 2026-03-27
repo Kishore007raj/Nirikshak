@@ -4,6 +4,9 @@
   cis: CIS 3.2
   resource: ec2_instance
   condition: has_public_ip == true
+  description: EC2 instance has a public IP address assigned, making it directly reachable from the internet without going through a load balancer or proxy.
+  impact: Directly exposed instances are vulnerable to port scanning, exploitation of running services, and DDoS attacks.
+  fix_suggestion: Remove the public IP assignment and place the instance behind a load balancer or NAT gateway. Use VPC endpoints for AWS service access.
   compliance:
   - framework: CIS
     control_id: CIS 3.2
@@ -15,6 +18,9 @@
   cis: CIS 3.3
   resource: ec2_instance
   condition: disk_encrypted == false
+  description: EBS volumes attached to this EC2 instance are not encrypted, leaving data-at-rest unprotected.
+  impact: If the EBS volume is snapshotted, shared, or the underlying hardware is decommissioned, sensitive data may be exposed.
+  fix_suggestion: Enable EBS encryption by default in the account settings and encrypt existing volumes by creating encrypted snapshots and restoring from them.
   compliance:
   - framework: CIS
     control_id: CIS 3.3

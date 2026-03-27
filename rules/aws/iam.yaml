@@ -4,6 +4,9 @@
   cis: CIS AWS 1.2
   resource: iam_user
   condition: mfa_enabled == false
+  description: IAM user account does not have Multi-Factor Authentication (MFA) enabled, relying solely on password-based authentication.
+  impact: Compromised credentials can be exploited without any second-factor challenge, enabling full account takeover and lateral movement.
+  fix_suggestion: Enable virtual MFA or hardware MFA device for the IAM user. Enforce MFA via IAM policies for sensitive API operations.
   compliance:
   - framework: CIS
     control_id: CIS AWS 1.2

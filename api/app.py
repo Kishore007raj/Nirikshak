@@ -5,7 +5,7 @@ Provides REST API endpoints to:
 - start scans (POST /scan/{provider})
 - retrieve latest scan results (GET /results)
 - fetch scan history (GET /history)
-- expose reports to the dashboard
+- download PDF reports (GET /download/{scan_id})
 - stream real-time scans (WebSocket /ws/scan)
 """
 
@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Any, Dict
+from typing import Any, Dict, List
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, WebSocket
@@ -24,6 +24,7 @@ from cloud.scanner import collect_resources
 from core.runner import run_scan
 from database.sqlite import init_db, save_scan, get_scans
 from utils.helpers import load_demo_data
+from utils.fallback import generate_description, generate_impact, generate_fix
 from reports.pdf_report import generate_pdf_report
 from terraform.plan_parser import parse_terraform_plan
 from utils.time import get_ist_time
@@ -57,6 +58,58 @@ def root():
     }
 
 
+# ── Normalize finding helper ─────────────────────────────────────────────────
+def _normalize_finding(f) -> Dict[str, Any]:
+    """Ensure every finding dict has all required fields populated."""
+    # Support both dataclass (Finding) and dict
+    if hasattr(f, "resource_id"):
+        res_type = f.resource_type or "unknown"
+        sev = f.severity or "MEDIUM"
+        compliance = f.compliance if f.compliance else []
+        return {
+            "resource_id": f.resource_id,
+            "type": res_type,
+            "severity": sev,
+            "description": f.description if f.description else generate_description(res_type, sev),
+            "impact": f.impact if f.impact else generate_impact(res_type, sev),
+            "fix_suggestion": f.fix_suggestion if f.fix_suggestion else generate_fix(res_type, sev),
+            "compliance": _format_compliance(compliance),
+        }
+    else:
+        res_type = f.get("type", f.get("resource_type", "unknown"))
+        sev = f.get("severity", "MEDIUM")
+        compliance = f.get("compliance") or []
+        return {
+            "resource_id": f.get("resource_id", "unknown"),
+            "type": res_type,
+            "severity": sev,
+            "description": f.get("description") or generate_description(res_type, sev),
+            "impact": f.get("impact") or generate_impact(res_type, sev),
+            "fix_suggestion": f.get("fix_suggestion") or generate_fix(res_type, sev),
+            "compliance": _format_compliance(compliance),
+        }
+
+
+def _format_compliance(compliance) -> str:
+    """Format compliance list into a readable string."""
+    if not compliance:
+        return "CIS Benchmark"
+    if isinstance(compliance, str):
+        return compliance
+    parts = []
+    for entry in compliance:
+        if isinstance(entry, dict):
+            fw = entry.get("framework", "")
+            ctrl = entry.get("control_id", "")
+            if fw and ctrl:
+                parts.append(f"{fw} {ctrl}")
+            elif ctrl:
+                parts.append(ctrl)
+        elif isinstance(entry, str):
+            parts.append(entry)
+    return ", ".join(parts) if parts else "CIS Benchmark"
+
+
 # ── Scan ─────────────────────────────────────────────────────────────────────
 @app.post("/scan/{provider}")
 def create_scan(provider: str):
@@ -73,7 +126,6 @@ def create_scan(provider: str):
             plan_path = "terraform/plan.json"
             if not Path(plan_path).exists():
                 Path("terraform").mkdir(exist_ok=True)
-                # Create a bare-minimum valid TF plan if missing
                 Path(plan_path).write_text('{"planned_values": {"root_module": {"resources": []}}}')
             resources = parse_terraform_plan(plan_path)
             mode = "iac"
@@ -100,7 +152,9 @@ def create_scan(provider: str):
         logger.error("Scan pipeline failed: %s", e)
         raise HTTPException(status_code=500, detail=str(e))
 
-    # Build summary
+    # Build normalized findings
+    normalized_findings = [_normalize_finding(f) for f in scan_result.findings]
+
     sc = scan_result.severity_count or {}
     return {
         "scan_id": scan_result.scan_id,
@@ -113,29 +167,33 @@ def create_scan(provider: str):
             "medium":   sc.get("MEDIUM", 0),
             "low":      sc.get("LOW", 0),
         },
-        "findings": [
-            {
-                "resource_id": f.resource_id,
-                "type": f.resource_type,
-                "severity": f.severity,
-                "description": f.description,
-                "impact": f.impact,
-                "fix_suggestion": f.fix_suggestion,
-                "compliance": f.compliance
-            }
-            for f in scan_result.findings
-        ],
+        "findings": normalized_findings,
         "compliance": scan_result.compliance,
         "metrics": scan_result.metrics,
         "timestamp": scan_result.timestamp,
-        "report_path": f"/report/{scan_result.scan_id}"
+        "report_path": f"/download/{scan_result.scan_id}"
     }
 
 
 # ── PDF Download ─────────────────────────────────────────────────────────────
-@app.get("/report/{scan_id}")
+@app.get("/download/{scan_id}")
 def download_report(scan_id: str):
-    return FileResponse(f"output/report_{scan_id}.pdf")
+    pdf_path = Path(f"output/report_{scan_id}.pdf")
+    if not pdf_path.exists():
+        raise HTTPException(status_code=404, detail="Report not found")
+    return FileResponse(
+        path=str(pdf_path),
+        media_type="application/pdf",
+        filename=f"nirikshak_report_{scan_id}.pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="nirikshak_report_{scan_id}.pdf"'
+        }
+    )
+
+# Keep legacy endpoint for backward compat
+@app.get("/report/{scan_id}")
+def report_redirect(scan_id: str):
+    return download_report(scan_id)
 
 
 # ── Results ───────────────────────────────────────────────────────────────────
@@ -163,8 +221,11 @@ def get_latest_result():
     latest = scans[0]
     findings = latest.get("findings") or []
 
+    # Normalize every finding through the fallback pipeline
+    normalized_findings = [_normalize_finding(f) for f in findings]
+
     summary = {"critical": 0, "high": 0, "medium": 0, "low": 0}
-    for f in findings:
+    for f in normalized_findings:
         sev = str(f.get("severity", "")).upper()
         if sev == "CRITICAL":
             summary["critical"] += 1
@@ -178,11 +239,11 @@ def get_latest_result():
     return {
         "risk_score": latest.get("risk_score", 0),
         "summary":    summary,
-        "findings":   findings,
+        "findings":   normalized_findings,
         "compliance": latest.get("compliance", {}),
         "metrics":    latest.get("metrics", {}),
         "timestamp":  latest.get("timestamp", ""),
-        "report_path": f"/report/{latest.get('scan_id')}"
+        "report_path": f"/download/{latest.get('scan_id')}"
     }
 
 
@@ -229,7 +290,7 @@ async def websocket_scan(ws: WebSocket):
                 if not resources and provider in {"aws", "gcp"}:
                     resources = load_demo_data(provider)
                 
-                # Pipeline Stage 2: normalize (Implicit in run_scan but documented in progress)
+                # Pipeline Stage 2: normalize
                 await ws.send_json({"status": "progress", "stage": "normalize", "progress": 30})
     
                 # Pipeline Stage 3: run_scan
@@ -246,6 +307,9 @@ async def websocket_scan(ws: WebSocket):
                 # Pipeline Stage 6: save_scan
                 await ws.send_json({"status": "progress", "stage": "save_scan", "progress": 95})
                 save_scan(scan_result)
+
+                # Normalize all findings through fallback pipeline
+                normalized_findings = [_normalize_finding(f) for f in (scan_result.findings or [])]
     
                 await ws.send_json({
                     "status": "completed",
@@ -255,20 +319,10 @@ async def websocket_scan(ws: WebSocket):
                         "timestamp": scan_result.timestamp,
                         "risk_score": scan_result.risk_score,
                         "summary": scan_result.severity_count,
-                        "findings": [
-                            {
-                                "resource_id": f.resource_id,
-                                "type": f.resource_type,
-                                "severity": f.severity,
-                                "description": f.description,
-                                "impact": f.impact,
-                                "fix_suggestion": f.fix_suggestion,
-                                "compliance": f.compliance
-                            } for f in (scan_result.findings or [])
-                        ],
+                        "findings": normalized_findings,
                         "compliance": scan_result.compliance,
                         "metrics": scan_result.metrics,
-                        "report_path": f"/report/{scan_result.scan_id}"
+                        "report_path": f"/download/{scan_result.scan_id}"
                     }
                 })
     

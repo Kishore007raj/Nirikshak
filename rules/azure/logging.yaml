@@ -4,11 +4,9 @@
   severity: MEDIUM
   cis_reference: '5.1'
   check: logging_enabled == false
-  description: 'Logging is not enabled for the resource.
-
-    Enable logging for audit trails and compliance.
-
-    '
+  description: Logging is not enabled for the resource. Enable logging for audit trails and compliance.
+  impact: Security incidents and unauthorized access attempts cannot be detected or investigated without activity logs.
+  fix_suggestion: Enable diagnostic logging and configure log retention policies. Forward logs to Azure Monitor or a SIEM solution.
   compliance:
   - framework: CIS
     control_id: '5.1'

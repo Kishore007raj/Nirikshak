@@ -13,6 +13,9 @@
     --color-medium: #eab308;
     --color-low: #3b82f6;
     --color-success: #22c55e;
+    --color-aws: #ff9900;
+    --color-azure: #0078d4;
+    --color-gcp: #34a853;
 
     /* Typography */
     --font-family: 'Inter', sans-serif;
@@ -29,7 +32,6 @@ body {
     color: var(--text-primary);
     font-family: var(--font-family);
     min-height: 100vh;
-    overflow-x: hidden;
     position: relative;
     background-image: 
         radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.08), transparent 25%),
@@ -80,6 +82,7 @@ body {
     letter-spacing: 1px;
     background: linear-gradient(90deg, #fff, #94a3b8);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -166,6 +169,29 @@ body {
     opacity: 0.7;
     cursor: not-allowed;
     transform: none;
+}
+
+.secondary-btn {
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.secondary-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.secondary-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .spinner {
@@ -375,7 +401,9 @@ body {
     border-radius: 12px;
 }
 
-/* Findings Table */
+/* ══════════════════════════════════════════════════════════════ */
+/* Findings Table — FIXED: horizontal + vertical scroll         */
+/* ══════════════════════════════════════════════════════════════ */
 .findings-card {
     flex: 1;
     overflow: hidden;
@@ -385,9 +413,14 @@ body {
 
 .card-header {
     display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.card-header-row {
+    display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
 }
 
 .timestamp-label {
@@ -400,7 +433,9 @@ body {
 
 .table-container {
     flex: 1;
-    overflow: auto;
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 600px;
     border-radius: 8px;
     border: 1px solid var(--glass-border);
     background: rgba(0, 0, 0, 0.2);
@@ -419,22 +454,22 @@ body {
 }
 
 .findings-table {
+    min-width: 1100px;
     width: 100%;
     border-collapse: collapse;
     text-align: left;
-    white-space: nowrap;
 }
 
 .findings-table th, 
 .findings-table td {
-    padding: 1rem;
+    padding: 0.85rem 1rem;
     border-bottom: 1px solid var(--glass-border);
 }
 
 .findings-table th {
     position: sticky;
     top: 0;
-    background: rgba(15, 23, 42, 0.9);
+    background: rgba(15, 23, 42, 0.95);
     backdrop-filter: blur(8px);
     font-weight: 600;
     font-size: 0.85rem;
@@ -442,6 +477,7 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     z-index: 10;
+    white-space: nowrap;
 }
 
 .findings-table tbody tr {
@@ -454,25 +490,71 @@ body {
 
 .findings-table td {
     font-size: 0.9rem;
+    vertical-align: top;
 }
 
+/* Resource ID — NEVER truncate */
 .cell-resource {
-    font-family: monospace;
+    font-family: 'Courier New', monospace;
+    color: #e2e8f0;
+    white-space: nowrap;
+    font-size: 0.85rem;
+}
+
+/* Type column — NEVER truncate */
+.cell-type {
+    white-space: nowrap;
     color: #e2e8f0;
 }
 
-.cell-desc {
-    white-space: normal;
-    min-width: 250px;
-    color: #cbd5e1;
+/* Severity — NEVER truncate */
+.cell-severity {
+    white-space: nowrap;
 }
 
-.cell-impact, .cell-fix {
+/* Description — allow wrapping, set min/max width */
+.cell-desc {
     white-space: normal;
-    min-width: 200px;
+    word-wrap: break-word;
+    min-width: 220px;
+    max-width: 320px;
+    color: #cbd5e1;
+    line-height: 1.5;
+}
+
+/* Impact — allow wrapping */
+.cell-impact {
+    white-space: normal;
+    word-wrap: break-word;
+    min-width: 180px;
+    max-width: 260px;
     color: #94a3b8;
     font-size: 0.85rem;
+    line-height: 1.5;
 }
+
+/* Fix — allow wrapping */
+.cell-fix {
+    white-space: normal;
+    word-wrap: break-word;
+    min-width: 180px;
+    max-width: 280px;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+/* Compliance — allow wrapping */
+.cell-compliance {
+    white-space: normal;
+    word-wrap: break-word;
+    min-width: 120px;
+    max-width: 180px;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
 
 /* Badge tags */
 .badge {
@@ -490,6 +572,13 @@ body {
 .badge-high { background: rgba(249, 115, 22, 0.15); color: #fdba74; border: 1px solid rgba(249, 115, 22, 0.3); }
 .badge-medium { background: rgba(234, 179, 8, 0.15); color: #fde047; border: 1px solid rgba(234, 179, 8, 0.3); }
 .badge-low { background: rgba(59, 130, 246, 0.15); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.3); }
+.badge-success { background: rgba(34, 197, 94, 0.15); color: #86efac; border: 1px solid rgba(34, 197, 94, 0.3); }
+
+/* Provider Badges */
+.badge.aws { background: var(--color-aws); color: #000; border: none; }
+.badge.azure { background: var(--color-azure); color: #fff; border: none; }
+.badge.gcp { background: var(--color-gcp); color: #fff; border: none; }
+.badge.terraform { background: #5c4ee5; color: #fff; border: none; }
 
 /* Empty State */
 .empty-state {
@@ -534,6 +623,17 @@ body {
 .toast.error { border-left-color: var(--color-critical); }
 .toast.success { border-left-color: var(--color-success); }
 
+/* Summary Text */
+.summary-text {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    background: rgba(59, 130, 246, 0.1);
+    border-left: 4px solid #3b82f6;
+    font-weight: 500;
+    display: none;
+    line-height: 1.5;
+}
 
 /* Responsive */
 @media (max-width: 1024px) {
