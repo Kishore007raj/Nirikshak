@@ -68,11 +68,8 @@ config.local.json
 reports/
 output/
 *.pdf
-
-nirishak_report.json
-nirishak_report.csv
-nirishak.db
-
+nirikshak_report.*
+*.csv
 
 # ========================
 # Terraform
