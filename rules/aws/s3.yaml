@@ -1,0 +1,42 @@
+- id: AWS-S3-001
+  title: S3 Bucket Public Access Block Not Enabled
+  severity: HIGH
+  cis: CIS AWS 2.1.1
+  resource: s3_bucket
+  condition: public_access_block.BlockPublicAcls == false
+  description: S3 bucket does not have the BlockPublicAcls setting enabled in its Public Access Block configuration, allowing public ACLs to be applied to bucket objects.
+  impact: Unauthorized users could gain read or write access to sensitive bucket data through public ACLs, leading to potential data breaches.
+  fix_suggestion: Enable all four Public Access Block settings (BlockPublicAcls, IgnorePublicAcls, BlockPublicPolicy, RestrictPublicBuckets) on the S3 bucket.
+  compliance:
+  - framework: CIS
+    control_id: CIS AWS 2.1.1
+  - framework: NIST
+    control_id: AC-3
+- id: AWS-S3-002
+  title: S3 Bucket Encryption Disabled
+  severity: MEDIUM
+  cis: CIS AWS 2.1.2
+  resource: s3_bucket
+  condition: encryption_enabled == false
+  description: Server-side encryption is not enabled on the S3 bucket, leaving stored objects unprotected at rest.
+  impact: Data stored in the bucket is vulnerable to unauthorized access if physical storage media is compromised or access controls are bypassed.
+  fix_suggestion: Enable default server-side encryption on the S3 bucket using SSE-S3 (AES-256) or SSE-KMS with a customer-managed key.
+  compliance:
+  - framework: CIS
+    control_id: CIS AWS 2.1.2
+  - framework: NIST
+    control_id: AC-3
+- id: AWS-S3-003
+  title: S3 Bucket Versioning Disabled
+  severity: LOW
+  cis: CIS AWS 2.1.3
+  resource: s3_bucket
+  condition: versioning_enabled == false
+  description: Object versioning is not enabled on the S3 bucket, preventing recovery of accidentally overwritten or deleted objects.
+  impact: Accidental or malicious deletion of objects cannot be recovered, increasing risk of data loss during operational errors or ransomware attacks.
+  fix_suggestion: Enable versioning on the S3 bucket and configure lifecycle rules to manage version retention costs.
+  compliance:
+  - framework: CIS
+    control_id: CIS AWS 2.1.3
+  - framework: NIST
+    control_id: AC-3

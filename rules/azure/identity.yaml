@@ -1,0 +1,32 @@
+- id: IDENTITY_MFA_DISABLED
+  title: MFA Not Enabled for User
+  resource_type: azure_ad_user
+  severity: HIGH
+  cis_reference: '4.1'
+  check: mfa_enabled == false
+  description: 'Multi-Factor Authentication (MFA) is not enabled for the user account.
+
+    MFA should be enabled for all critical accounts.
+
+    '
+  impact: Account Takeover
+  fix_suggestion: Enforce MFA via Conditional Access Policies.
+  compliance:
+  - framework: CIS
+    control_id: '4.1'
+  - framework: NIST
+    control_id: AC-3
+- id: IDENTITY_ADMIN_ROLE
+  title: Admin Role Assigned Directly
+  resource_type: azure_ad_user
+  severity: MEDIUM
+  cis_reference: '4.2'
+  check: is_admin == true
+  description: User is directly assigned an over-permissive Admin role.
+  impact: Privilege Escalation
+  fix_suggestion: Use PIM (Privileged Identity Management) for just-in-time access.
+  compliance:
+  - framework: CIS
+    control_id: '4.2'
+  - framework: NIST
+    control_id: AC-3

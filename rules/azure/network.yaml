@@ -1,0 +1,82 @@
+- id: NSG_OPEN_ALL
+  title: Network Security Group Open to All
+  resource_type: network_security_group
+  severity: CRITICAL
+  cis_reference: '6.2'
+  check: open_to_world == true
+  description: 'Network Security Group allows inbound traffic from 0.0.0.0/0.
+
+    This exposes the resources to the entire internet.
+
+    '
+  impact: Network Intrusion
+  fix_suggestion: Restrict inbound source to specific IP ranges.
+  compliance:
+  - framework: CIS
+    control_id: '6.2'
+  - framework: NIST
+    control_id: AC-3
+- id: NSG_SSH_OPEN
+  title: SSH Port Open to All
+  resource_type: network_security_group
+  severity: HIGH
+  cis_reference: '6.3'
+  check: open_ssh == true
+  description: 'SSH port (22) is open to the world (0.0.0.0/0).
+
+    Restrict SSH access to specific IP ranges.
+
+    '
+  impact: Brute Force Attacks
+  fix_suggestion: Remove wildcard network rule for port 22.
+  compliance:
+  - framework: CIS
+    control_id: '6.3'
+  - framework: NIST
+    control_id: AC-3
+- id: NSG_RDP_OPEN
+  title: RDP Port Open to All
+  resource_type: network_security_group
+  severity: HIGH
+  cis_reference: '6.4'
+  check: open_rdp == true
+  description: 'RDP port (3389) is open to the world (0.0.0.0/0).
+
+    Restrict RDP access to specific IP ranges.
+
+    '
+  impact: Ransomware / Unauthorized Access
+  fix_suggestion: Remove wildcard network rule for port 3389.
+  compliance:
+  - framework: CIS
+    control_id: '6.4'
+  - framework: NIST
+    control_id: AC-3
+- id: NSG_ALL_PORTS_OPEN
+  title: All Ports Open
+  resource_type: network_security_group
+  severity: CRITICAL
+  cis_reference: '6.5'
+  check: open_all_ports == true
+  description: NSG allows traffic on all ports (*).
+  impact: Extensive Network Exposure
+  fix_suggestion: Specify exact destination ports instead of *.
+  compliance:
+  - framework: CIS
+    control_id: '6.5'
+  - framework: NIST
+    control_id: AC-3
+- id: NSG_WIDE_CIDR
+  title: Wide CIDR Range Allowed
+  resource_type: network_security_group
+  severity: MEDIUM
+  cis_reference: '6.6'
+  check: wide_cidr == true
+  description: Inbound rule permits a wide subnet (< /24).
+  impact: Increased Attack Surface
+  fix_suggestion: Narrow down allowed source IP ranges.
+  compliance:
+  - framework: CIS
+    control_id: '6.6'
+  - framework: NIST
+    control_id: AC-3

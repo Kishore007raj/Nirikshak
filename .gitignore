@@ -1,32 +1,26 @@
+# ========================
 # Python
+# ========================
 __pycache__/
 *.py[cod]
-*$py.class
 *.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
 *.egg
+*.egg-info/
+dist/
+build/
+.eggs/
 
+# ========================
 # Virtual Environments
+# ========================
+.venv/
 venv/
 env/
 ENV/
-.venv
 
-# IDE
+# ========================
+# IDE / OS
+# ========================
 .vscode/
 .idea/
 *.swp
@@ -35,27 +29,66 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Testing
+# ========================
+# Testing / Coverage
+# ========================
 .pytest_cache/
+.tox/
 .coverage
 htmlcov/
-.tox/
 
-# Credentials & Configuration
-.env
-.env.local
-config.local.json
-credentials.json
-aws_credentials
-secrets.yml
-
-# Temporary files
+# ========================
+# Logs / Temp
+# ========================
 *.log
 *.tmp
 temp/
 tmp/
 
-# Reports (if generated, not version controlled)
-reports/*.html
-reports/*.json
-reports/*.csv
+# ========================
+# Environment / Secrets
+# ========================
+.env
+.env.*
+*.env
+credentials.json
+secrets.yml
+aws_credentials
+config.local.json
+
+# ========================
+# Database
+# ========================
+*.db
+!database/sqlite.py
+
+# ========================
+# Reports / Outputs
+# ========================
+reports/
+output/
+*.pdf
+
+nirishak_report.json
+nirishak_report.csv
+nirishak.db
+
+
+# ========================
+# Terraform
+# ========================
+.terraform/
+*.tfstate
+*.tfstate.backup
+!terraform/plan.json
+
+# ========================
+# Node
+# ========================
+node_modules/
+
+# ========================
+# Misc
+# ========================
+yarn-error.log
+npm-debug.log*

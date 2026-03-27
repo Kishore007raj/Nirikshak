@@ -1,0 +1,14 @@
+- id: AWS-LOG-001
+  title: CloudTrail Not Multi-Region
+  severity: MEDIUM
+  cis: CIS AWS 3.1
+  resource: cloudtrail
+  condition: is_multi_region == false
+  description: CloudTrail is not configured for multi-region logging, leaving API activity in other regions unmonitored.
+  impact: Security events in regions without CloudTrail coverage will go undetected, creating blind spots in incident response and forensic investigations.
+  fix_suggestion: Enable multi-region trail in CloudTrail configuration to capture API activity across all AWS regions.
+  compliance:
+  - framework: CIS
+    control_id: CIS AWS 3.1
+  - framework: NIST
+    control_id: AC-3

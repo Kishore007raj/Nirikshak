@@ -1,0 +1,32 @@
+- id: VM_NO_ENCRYPTION
+  title: Virtual Machine Disk Encryption Not Enabled
+  resource_type: vm
+  severity: HIGH
+  cis_reference: '7.1'
+  check: encryption_enabled == false
+  description: 'Disk encryption is not enabled on the virtual machine.
+
+    Azure Disk Encryption should be enabled for OS and data disks.
+
+    '
+  impact: Local Data Exposure
+  fix_suggestion: Enable Azure Disk Encryption using a Key Vault.
+  compliance:
+  - framework: CIS
+    control_id: '7.1'
+  - framework: NIST
+    control_id: AC-3
+- id: VM_EXPOSED
+  title: Virtual Machine Exposed via NSG
+  resource_type: vm
+  severity: CRITICAL
+  cis_reference: '7.2'
+  check: exposed_via_nsg == true
+  description: The VM has an associated NSG exposing critical ports.
+  impact: Direct Internet Attacks
+  fix_suggestion: Disassociate public IP or restrict NSG attached to the VM.
+  compliance:
+  - framework: CIS
+    control_id: '7.2'
+  - framework: NIST
+    control_id: AC-3

@@ -1,0 +1,28 @@
+- id: IDENTITY-001
+  title: IAM user has administrator privileges
+  severity: CRITICAL
+  cis: CIS AWS 1.1
+  resource: iam_user
+  condition: is_admin == true
+  description: IAM user has AdministratorAccess or equivalent over-permissive policy attached, granting unrestricted access to all AWS services and resources.
+  impact: A compromised admin account enables full control of the AWS environment including data exfiltration, resource destruction, and privilege escalation.
+  fix_suggestion: Apply the principle of least privilege by replacing AdministratorAccess with scoped policies. Use AWS Organizations SCPs to limit blast radius.
+  compliance:
+  - framework: CIS
+    control_id: CIS AWS 1.1
+  - framework: NIST
+    control_id: AC-3
+- id: IDENTITY-002
+  title: IAM user missing MFA
+  severity: HIGH
+  cis: CIS AWS 1.2
+  resource: iam_user
+  condition: mfa_enabled == false
+  description: IAM user does not have Multi-Factor Authentication enabled, relying solely on a single authentication factor.
+  impact: Single-factor authentication makes the account susceptible to credential theft, phishing, and brute-force attacks.
+  fix_suggestion: Enable MFA for the IAM user using a virtual MFA device or hardware token. Enforce MFA through IAM policy conditions.
+  compliance:
+  - framework: CIS
+    control_id: CIS AWS 1.2
+  - framework: NIST
+    control_id: AC-3

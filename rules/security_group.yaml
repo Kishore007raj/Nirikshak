@@ -1,8 +1,0 @@
-#security group rules should not allow all traffic from all sources
-
-- id: AWS-EC2-001
-  title: Security Group Allows SSH from Anywhere
-  severity: CRITICAL
-  cis: CIS AWS 4.1
-  resource: security_group
-  condition: open_ssh == true

@@ -1,0 +1,13 @@
+[
+  {
+    "instance_id": "i-0123456789abcdef0",
+    "public_ip": "54.123.45.67",
+    "disk_encrypted": false,
+    "security_groups": [
+      {
+        "group_id": "sg-12345678",
+        "group_name": "demo-sg"
+      }
+    ]
+  }
+]

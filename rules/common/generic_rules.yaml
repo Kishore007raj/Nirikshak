@@ -1,0 +1,42 @@
+- id: GEN-ENCRYPT-001
+  title: Encryption Not Enabled
+  resource_type: s3_bucket
+  severity: MEDIUM
+  cis_reference: CIS 2.1.2
+  check: encryption_enabled == false
+  description: Server-side encryption is not enabled on the storage resource, leaving data at rest unprotected.
+  impact: Unencrypted data may be exposed if access controls are bypassed or storage media is compromised.
+  fix_suggestion: Enable server-side encryption using the cloud provider native encryption service or customer-managed keys.
+  compliance:
+  - framework: CIS
+    control_id: CIS 2.1.2
+  - framework: NIST
+    control_id: SC-28
+- id: GEN-ENCRYPT-002
+  title: Encryption Not Enabled
+  resource_type: gcs_bucket
+  severity: MEDIUM
+  cis_reference: CIS GCP 5.2
+  check: encryption_enabled == false
+  description: Customer-managed encryption keys are not configured on the cloud storage resource.
+  impact: Without customer-managed encryption, the organization has limited control over key lifecycle and access auditing.
+  fix_suggestion: Configure customer-managed encryption keys (CMEK) using the cloud provider key management service.
+  compliance:
+  - framework: CIS
+    control_id: CIS GCP 5.2
+  - framework: NIST
+    control_id: SC-28
+- id: GEN-ENCRYPT-003
+  title: Encryption Not Enabled
+  resource_type: storage_account
+  severity: HIGH
+  cis_reference: '3.7'
+  check: encryption_enabled == false
+  description: Encryption at rest is not enabled on the storage account.
+  impact: Stored data is vulnerable to unauthorized access if physical or logical access controls are circumvented.
+  fix_suggestion: Enable Storage Service Encryption (SSE) with Microsoft-managed or customer-managed keys.
+  compliance:
+  - framework: CIS
+    control_id: '3.7'
+  - framework: NIST
+    control_id: SC-28
