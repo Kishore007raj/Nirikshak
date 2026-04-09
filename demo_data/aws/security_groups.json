@@ -1,12 +1,25 @@
 [
   {
-    "group_id": "sg-123",
-    "group_name": "open-ssh",
+    "id": "sg-open-dev",
+    "name": "sg-open-dev",
     "inbound_rules": [
       {
+        "IpProtocol": "tcp",
         "FromPort": 22,
         "ToPort": 22,
         "IpRanges": [{"CidrIp": "0.0.0.0/0"}]
+      }
+    ]
+  },
+  {
+    "id": "sg-secure-db",
+    "name": "sg-secure-db",
+    "inbound_rules": [
+      {
+        "IpProtocol": "tcp",
+        "FromPort": 5432,
+        "ToPort": 5432,
+        "IpRanges": [{"CidrIp": "10.0.0.0/8"}]
       }
     ]
   }

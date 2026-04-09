@@ -15,6 +15,7 @@ from .engine import run_engine
 from .loader import load_rules
 from .severity import calculate_risk_score, summarize_severity
 from .models import Finding, Resource, ScanResult
+from .normalization import normalize_finding
 from utils.time import get_ist_time
 import time
 import logging
@@ -98,7 +99,7 @@ def run_scan(
         mode=mode,
         timestamp=timestamp,
         resources=resources,
-        findings=[Finding(**f) for f in findings],
+        findings=[Finding(**normalize_finding(f)) for f in findings],
         severity_count=severity_count,
         risk_score=risk_score,
         metrics=metrics,

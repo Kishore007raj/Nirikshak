@@ -1,10 +1,14 @@
 [
   {
-    "user_name": "admin-user",
-    "mfa_enabled": false
+    "id": "admin-demo-user",
+    "name": "admin-demo-user",
+    "mfa_enabled": false,
+    "attached_policies": ["arn:aws:iam::aws:policy/AdministratorAccess"]
   },
   {
-    "user_name": "secure-user",
-    "mfa_enabled": true
+    "id": "standard-developer",
+    "name": "standard-developer",
+    "mfa_enabled": true,
+    "attached_policies": ["arn:aws:iam::aws:policy/ReadOnlyAccess"]
   }
 ]
