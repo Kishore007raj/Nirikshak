@@ -1,0 +1,22 @@
+[
+  {
+    "resource_id": "aws-ec2-critical-exposed",
+    "resource_type": "ec2_instance",
+    "severity": "HIGH",
+    "exposed_to_internet": true,
+    "description": "EC2 instance with public IP and no EBS encryption.",
+    "impact": "Exposed unencrypted volume.",
+    "fix_suggestion": "Encrypt EBS volumes.",
+    "compliance": "CIS 3.2"
+  },
+  {
+    "resource_id": "aws-ec2-medium-internal",
+    "resource_type": "ec2_instance",
+    "severity": "MEDIUM",
+    "exposed_to_internet": false,
+    "description": "Internal EC2 instance with no EBS encryption.",
+    "impact": "Unencrypted data-at-rest.",
+    "fix_suggestion": "Encrypt EBS volumes.",
+    "compliance": "CIS 3.4"
+  }
+]
