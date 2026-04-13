@@ -17,14 +17,14 @@ from typing import Any, Dict, List
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, WebSocket
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
 from cloud.scanner import collect_resources
 from core.runner import run_scan
 from database.sqlite import init_db, save_scan, get_scans
 from utils.helpers import load_demo_data
-from utils.fallback import generate_description, generate_impact, generate_fix
 from reports.pdf_report import generate_pdf_report
 from terraform.plan_parser import parse_terraform_plan
 from utils.time import get_ist_time
@@ -46,68 +46,18 @@ app.add_middleware(
 @app.on_event("startup")
 def startup_event():
     init_db()
+    # Ensure necessary directories exist
+    Path(os.getenv("OUTPUT_PATH", "output")).mkdir(parents=True, exist_ok=True)
+    Path("terraform").mkdir(parents=True, exist_ok=True)
 
 
-# ── Root ──────────────────────────────────────────────────────────────────────
-@app.get("/")
+@app.get("/api/health")
 def root():
     return {
         "status": "healthy",
         "message": "NIRIKSHAK API running",
         "timestamp": get_ist_time()
     }
-
-
-# ── Normalize finding helper ─────────────────────────────────────────────────
-def _normalize_finding(f) -> Dict[str, Any]:
-    """Ensure every finding dict has all required fields populated."""
-    # Support both dataclass (Finding) and dict
-    if hasattr(f, "resource_id"):
-        res_type = f.resource_type or "unknown"
-        sev = f.severity or "MEDIUM"
-        compliance = f.compliance if f.compliance else []
-        return {
-            "resource_id": f.resource_id,
-            "type": res_type,
-            "severity": sev,
-            "description": f.description if f.description else generate_description(res_type, sev),
-            "impact": f.impact if f.impact else generate_impact(res_type, sev),
-            "fix_suggestion": f.fix_suggestion if f.fix_suggestion else generate_fix(res_type, sev),
-            "compliance": _format_compliance(compliance),
-        }
-    else:
-        res_type = f.get("type", f.get("resource_type", "unknown"))
-        sev = f.get("severity", "MEDIUM")
-        compliance = f.get("compliance") or []
-        return {
-            "resource_id": f.get("resource_id", "unknown"),
-            "type": res_type,
-            "severity": sev,
-            "description": f.get("description") or generate_description(res_type, sev),
-            "impact": f.get("impact") or generate_impact(res_type, sev),
-            "fix_suggestion": f.get("fix_suggestion") or generate_fix(res_type, sev),
-            "compliance": _format_compliance(compliance),
-        }
-
-
-def _format_compliance(compliance) -> str:
-    """Format compliance list into a readable string."""
-    if not compliance:
-        return "CIS Benchmark"
-    if isinstance(compliance, str):
-        return compliance
-    parts = []
-    for entry in compliance:
-        if isinstance(entry, dict):
-            fw = entry.get("framework", "")
-            ctrl = entry.get("control_id", "")
-            if fw and ctrl:
-                parts.append(f"{fw} {ctrl}")
-            elif ctrl:
-                parts.append(ctrl)
-        elif isinstance(entry, str):
-            parts.append(entry)
-    return ", ".join(parts) if parts else "CIS Benchmark"
 
 
 # ── Scan ─────────────────────────────────────────────────────────────────────
@@ -152,8 +102,8 @@ def create_scan(provider: str):
         logger.error("Scan pipeline failed: %s", e)
         raise HTTPException(status_code=500, detail=str(e))
 
-    # Build normalized findings
-    normalized_findings = [_normalize_finding(f) for f in scan_result.findings]
+    # findings are strictly normalized by engine, just convert to dict
+    normalized_findings = [f.__dict__ for f in scan_result.findings]
 
     sc = scan_result.severity_count or {}
     return {
@@ -178,7 +128,8 @@ def create_scan(provider: str):
 # ── PDF Download ─────────────────────────────────────────────────────────────
 @app.get("/download/{scan_id}")
 def download_report(scan_id: str):
-    pdf_path = Path(f"output/report_{scan_id}.pdf")
+    output_dir = Path(os.getenv("OUTPUT_PATH", "output"))
+    pdf_path = output_dir / f"report_{scan_id}.pdf"
     if not pdf_path.exists():
         raise HTTPException(status_code=404, detail="Report not found")
     return FileResponse(
@@ -221,8 +172,7 @@ def get_latest_result():
     latest = scans[0]
     findings = latest.get("findings") or []
 
-    # Normalize every finding through the fallback pipeline
-    normalized_findings = [_normalize_finding(f) for f in findings]
+    normalized_findings = [f if isinstance(f, dict) else f.__dict__ for f in findings]
 
     summary = {"critical": 0, "high": 0, "medium": 0, "low": 0}
     for f in normalized_findings:
@@ -308,8 +258,8 @@ async def websocket_scan(ws: WebSocket):
                 await ws.send_json({"status": "progress", "stage": "save_scan", "progress": 95})
                 save_scan(scan_result)
 
-                # Normalize all findings through fallback pipeline
-                normalized_findings = [_normalize_finding(f) for f in (scan_result.findings or [])]
+                # findings are strictly normalized by engine, just serialize
+                normalized_findings = [f.__dict__ for f in (scan_result.findings or [])]
     
                 await ws.send_json({
                     "status": "completed",
@@ -334,3 +284,7 @@ async def websocket_scan(ws: WebSocket):
                 })
         except Exception:
             break
+
+# Mount frontend dashboard at the root level (ensure this is after all API routes)
+app.mount("/", StaticFiles(directory="dashboard", html=True), name="dashboard")
+

@@ -1,16 +1,26 @@
 [
   {
-    "name": "public-bucket",
+    "id": "prod-public-assets",
+    "name": "prod-public-assets",
     "public_access_block": {
-      "BlockPublicAcls": false
+      "BlockPublicAcls": false,
+      "BlockPublicPolicy": false,
+      "IgnorePublicAcls": false,
+      "RestrictPublicBuckets": false
     },
-    "encryption_enabled": false
+    "encryption": false,
+    "versioning_enabled": true
   },
   {
-    "name": "secure-bucket",
+    "id": "secure-financial-backup",
+    "name": "secure-financial-backup",
     "public_access_block": {
-      "BlockPublicAcls": true
+      "BlockPublicAcls": true,
+      "BlockPublicPolicy": true,
+      "IgnorePublicAcls": true,
+      "RestrictPublicBuckets": true
     },
-    "encryption_enabled": true
+    "encryption": true,
+    "versioning_enabled": true
   }
 ]

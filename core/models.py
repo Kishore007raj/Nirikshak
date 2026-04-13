@@ -37,12 +37,13 @@ class Finding:
     resource_type: str
     region: str
     timestamp: str
-    description: str = ""
-    impact: str = ""
-    fix_suggestion: str = ""
+    type: str = "unknown"
+    description: str = "No description available"
+    impact: str = "No impact assessed"
+    fix_suggestion: str = "No fix suggestion available"
     compliance: List[Dict[str, str]] = field(default_factory=list)
-    cis_reference: str = ""
-    details: str = ""
+    cis_reference: str = "N/A"
+    details: str = "No additional details"
     # Metadata for risk scoring
     exposed_to_internet: bool = False
     sensitive_data: bool = False

@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  nirikshak:
+    build: .
+    container_name: nirikshak_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./nirikshak.db:/app/nirikshak.db
+      - ./output:/app/output
+      - ./terraform:/app/terraform
+    environment:
+      - OUTPUT_PATH=/app/output
+      - TZ=Asia/Kolkata
+    restart: unless-stopped

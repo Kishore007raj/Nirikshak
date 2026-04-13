@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from core.models import Finding, ScanResult
-from utils.fallback import generate_description, generate_impact, generate_fix
 
 
 DEFAULT_DB_PATH = "nirikshak.db"
@@ -76,41 +75,16 @@ def save_scan_result(scan_result: ScanResult, db_path: str = DEFAULT_DB_PATH) ->
     conn = _get_connection(db_path)
     cursor = conn.cursor()
 
-    import dataclasses
-
     findings_json = []
     for f in scan_result.findings:
-        res_type = f.resource_type or "unknown"
-        sev = f.severity or "MEDIUM"
-
-        # Format compliance
-        compliance_list = f.compliance if f.compliance else []
-        if isinstance(compliance_list, str):
-            comp_str = compliance_list
-        elif isinstance(compliance_list, list) and compliance_list:
-            parts = []
-            for c in compliance_list:
-                if isinstance(c, dict):
-                    fw = c.get("framework", "")
-                    ctrl = c.get("control_id", "")
-                    if fw and ctrl:
-                        parts.append(f"{fw} {ctrl}")
-                    elif ctrl:
-                        parts.append(ctrl)
-                elif isinstance(c, str):
-                    parts.append(c)
-            comp_str = ", ".join(parts) if parts else "CIS Benchmark"
-        else:
-            comp_str = "CIS Benchmark"
-
         findings_json.append({
             "resource_id": f.resource_id,
-            "type": res_type,
-            "severity": sev,
-            "description": f.description if f.description else generate_description(res_type, sev),
-            "impact": f.impact if f.impact else generate_impact(res_type, sev),
-            "fix_suggestion": f.fix_suggestion if f.fix_suggestion else generate_fix(res_type, sev),
-            "compliance": comp_str,
+            "type": f.resource_type or "unknown",
+            "severity": f.severity or "MEDIUM",
+            "description": f.description,
+            "impact": f.impact,
+            "fix_suggestion": f.fix_suggestion,
+            "compliance": f.compliance if isinstance(f.compliance, str) else "CIS Benchmark",
         })
 
     cursor.execute(
