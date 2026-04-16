@@ -4,55 +4,29 @@ Nirikshak is a self-hosted, rule-driven cloud misconfiguration scanner for AWS, 
 
 ---
 
-## Overview
+## What it does
 
-Nirikshak audits both live cloud environments and Infrastructure-as-Code plans. It detects misconfigurations such as:
-
-* Public storage buckets
-* Open SSH/RDP access
-* Disabled logging
-* Missing encryption
-* Weak IAM policies
-
-It normalizes provider-specific data into a unified schema and evaluates it using rule-driven logic mapped to CIS and NIST benchmarks. Output is structured, consistent, and audit-ready.
-
-Unlike typical CSPM tools, Nirikshak exposes all rules, runs fully offline, and applies identical logic to both deployed infrastructure and IaC plans.
+Nirikshak identifies security misconfigurations in cloud infrastructure. It scans AWS S3, Azure Blob, and GCP buckets for public exposure. It checks security groups for open management ports (SSH/RDP). It audits IAM policies for excessive permissions. The tool normalizes provider data into a single schema and evaluates it against YAML-based rules mapped to CIS and NIST benchmarks.
 
 ---
 
-## Problem Statement
+## Why it exists
 
-Cloud misconfigurations expose sensitive systems across government platforms, PSUs, BFSI, healthcare, and startups.
-
-Common failures:
-
-* Public data exposure via storage services
-* Overly permissive network rules
-* Logging disabled or misconfigured
-* Missing encryption controls
-
-Most CSPM tools fail here:
-
-* SaaS-dependent, not deployable in restricted environments
-* Detection logic hidden
-* Not usable in academic or air-gapped setups
-
-Nirikshak runs locally, exposes all detection logic, and produces consistent outputs.
+Traditional CSPM tools often require SaaS connectivity or only support live infrastructure. Nirikshak fills three gaps:
+1. **Air-gapped execution**: Runs fully offline with no external telemetry.
+2. **Unified logic**: Uses identical rules for both live cloud resources and Terraform JSON plans.
+3. **Transparent attribution**: Maps every finding directly to a specific CIS/NIST control without abstract scoring layers.
 
 ---
 
 ## Features
 
-* **Multi-Cloud Support:** AWS, Azure, GCP
-* **IaC Scanning:** Terraform JSON plan evaluation before deployment
-* **Rule Engine:** YAML/JSON rules mapped directly to CIS/NIST
-* **Unified Execution:** Same rules applied to live cloud and IaC
-* **Agentless:** Read-only scanning
-* **Structured Findings:** Resource, severity, impact, fix, compliance
-* **Risk Scoring:** Critical / High / Medium / Low with aggregate score
-* **Reports:** JSON, CSV, PDF
-* **Realtime Feedback:** WebSocket-based scan progress
-* **Self-Hosted:** No telemetry, no external calls
+- **Multi-Cloud Audit**: Supports AWS, Azure, and GCP via native SDKs.
+- **IaC Scanning**: Evaluates Terraform `plan -json` files before deployment.
+- **Rules-as-Code**: Detections defined in human-readable YAML.
+- **Risk Mapping**: Direct attribution to CIS and NIST frameworks.
+- **Local Persistence**: Stores scan history in a local SQLite database.
+- **Audit Reports**: Generates PDF and CSV summaries for compliance teams.
 
 ---
 
@@ -119,50 +93,168 @@ Nirikshak uses a layered pipeline.
 
 ---
 
-## Dashboard UX Flow
+## Quick Start
 
-1. **Before Scan:** Empty state, zero metrics
-2. **Run Scan:** Select provider → trigger scan
-3. **During Scan:** Live progress via WebSocket
-4. **Processing:** Backend executes full scan pipeline
-5. **After Scan:** Findings table populated automatically
-6. **Download:** Export PDF/CSV report
+### 1. Install prerequisites
+
+Make sure these are installed and working:
+
+```bash
+docker --version
+docker-compose --version
+python --version
+git --version
+```
+
+### 2. Configure cloud providers (if used)
+
+#### Azure
+
+```bash
+az login
+az account show
+```
+
+#### AWS
+
+```bash
+aws configure
+aws sts get-caller-identity
+```
+
+#### GCP
+
+```bash
+gcloud auth login
+gcloud config set project <your-project-id>
+gcloud auth list
+```
+
+### 3. Clone the repository
+
+```bash
+git clone <Nirikshak>
+cd <Nirikshak>
+```
+
+### 4. Set environment variables (if required)
+
+```bash
+cp .env.example .env
+```
+
+Add keys if your system uses them:
+
+```
+AZURE_API_KEY=your_key
+AWS_ACCESS_KEY_ID=your_key
+AWS_SECRET_ACCESS_KEY=your_key
+GCP_PROJECT_ID=your_project
+```
+
+### 5. Start the system
+
+```bash
+docker-compose up --build
+```
+
+The backend runs at:
+`http://localhost:8000`
+
+API docs (if enabled):
+`http://localhost:8000/docs`
+
+### 6. Verify containers are running
+
+```bash
+docker ps
+```
+
+You should see `nirikshak_app` with status **Up**.
+
+### 7. Verify detection system
+
+Run the validation suite:
+
+```bash
+python validate.py
+```
+
+This checks parsing, detection logic, and scoring.
+
+### 8. Check logs
+
+```bash
+docker logs -f nirikshak_app
+```
+
+Use this to monitor scans and debug errors.
+
+### 9. Test the system
+
+Example request:
+
+```bash
+curl -X POST http://localhost:8000/analyze \
+-H "Content-Type: application/json" \
+-d '{"email":"Suspicious login attempt. Click here."}'
+```
+
+### 10. Stop the system
+
+```bash
+docker-compose down
+```
+---
+
+## Usage
+
+1. **Authenticate on host**: Run `aws configure`, `az login`, or `gcloud auth login`.
+2. **Select Provider**: Use the UI to choose between AWS, Azure, or GCP.
+3. **Execute Scan**: Trigger the collection engine.
+4. **Download Report**: Export findings to PDF or CSV from the results table.
 
 ---
 
-## Sample Findings JSON
+## Example Output
+
+Findings use a flat JSON structure for easy integration:
 
 ```json
 {
-  "scan_id": "f7c1a2b3-9d88-4aef-a6c1-1234567890ab",
-  "provider": "aws",
-  "status": "completed",
-  "risk_score": 82,
-  "summary": {"critical":2,"high":3,"medium":1,"low":0},
-  "findings":[
-    {
-      "resource_id": "bucket123",
-      "type": "s3_bucket",
-      "severity": "CRITICAL",
-      "description": "Public access enabled on S3 bucket.",
-      "impact": "Sensitive data exposure.",
-      "fix_suggestion": "Disable public access at bucket level.",
-      "compliance": "CIS AWS 2.2"
-    },
-    {
-      "resource_id": "vm456",
-      "type": "vm_instance",
-      "severity": "HIGH",
-      "description": "RDP port 3389 open to all.",
-      "impact": "Unauthorized remote access risk.",
-      "fix_suggestion": "Restrict RDP access via security group.",
-      "compliance": "CIS AWS 4.2"
-    }
-  ],
-  "metrics": {"scan_time_sec":4.2,"resources_per_sec":11.3,"findings_density":0.33},
-  "timestamp": "2026-03-28T12:00:00Z",
-  "report_path": "/download/f7c1a2b3-9d88-4aef-a6c1-1234567890ab"
+  "resource_id": "production-data-storage",
+  "resource_type": "storage_account",
+  "severity": "CRITICAL",
+  "description": "Public read access is enabled.",
+  "impact": "Unauthenticated data exfiltration.",
+  "fix_suggestion": "Update ACL to private.",
+  "compliance": "CIS Azure 3.1"
 }
+```
+
+---
+
+## API
+
+| Endpoint | Method | Description |
+| :--- | :--- | :--- |
+| `/scan/{provider}` | POST | Triggers a new infrastructure scan |
+| `/results` | GET | Returns the latest findings |
+| `/history` | GET | Lists past scan summaries |
+| `/download/{id}` | GET | Exports a specific scan report |
+
+---
+
+## Project Structure
+
+```text
+api/       # FastAPI endpoints and WebSocket handlers
+core/      # Normalization and rule evaluation engine
+aws/       # AWS adapter (boto3)
+azure/     # Azure adapter (azure-mgmt)
+gcp/       # GCP adapter (google-cloud)
+rules/     # YAML detection definitions
+dashboard/ # Frontend dashboard (HTML/JS)
 ```
 
 ---
@@ -201,70 +293,21 @@ Nirikshak uses a layered pipeline.
 
 ---
 
-## Getting Started
-
-```bash
-git clone https://github.com/arasu/Nirikshak.git
-cd Nirikshak
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn api.app:app --host 127.0.0.1 --port 8000
-```
-
-Open `dashboard/index.html`, select provider, run scan, download report.
-
----
-
-## API Endpoints
-
-* `POST /scan/{provider}` – trigger scan
-* `GET /results` – latest findings
-* `GET /history` – past scans
-* `GET /download/{scan_id}` – PDF report
-* `WS /ws/scan` – live progress
-
----
-
 ## Limitations
 
-* Read-only; no auto-remediation
-* Single-tenant design
-* No drift tracking between scans
-* No runtime behavior analysis
-* Rule-based detection only
+- **Read-Only**: Detects issues but does not modify infrastructure.
+- **Local Scope**: Designed for single-node deployment; no distributed scanning.
+- **Latency**: Large environments may experience collection delays based on API rate limits.
+- **Persistence**: Default SQLite is not suitable for high-concurrency environments.
 
 ---
 
 ## Roadmap
 
-### Phase 1: Core Engine
-
-* Expand CIS/NIST coverage
-* Improve scoring model
-* Modular adapters
-
-### Phase 2: IaC & Pipeline Integration
-
-* Terraform + CloudFormation
-* CI/CD integration
-
-### Phase 3: Platform Layer
-
-* Persistent backend
-* Multi-user dashboard
-* Scan history and filters
-
-### Phase 4: Advanced Capabilities
-
-* Drift detection
-* Risk trend analysis
-* Extended compliance mapping
-
-### Phase 5: Scaling
-
-* Alerting
-* Lightweight monitoring agent
+- **Drift Detection**: Identify state changes between historical scans.
+- **CI/CD Integration**: CLI plugin for GitHub Actions and GitLab CI.
+- **Advanced Alerting**: PagerDuty and Slack webhook integrations.
+- **Custom Rules**: Web-based editor for YAML rule creation.
 
 ---
 
