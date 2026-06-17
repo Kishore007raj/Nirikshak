@@ -1,6 +1,6 @@
 # Nirikshak - A Cloud Misconfiguration Scanner
 
-Nirikshak is a self-hosted, rule-driven cloud misconfiguration scanner for AWS, Azure, and GCP. It detects high-impact security issues using transparent rules mapped to CIS and NIST benchmarks, with no SaaS dependency.
+Nirikshak is a self-hosted cloud security scanner that detects high-impact misconfigurations across AWS, Azure, and GCP using transparent, rule-based checks aligned with CIS and NIST security standards.
 
 ---
 
